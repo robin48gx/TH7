@@ -2,6 +2,7 @@ import math
 import os
 import spidev
 import time
+import RPi.GPIO as GPIO
 
 spi = spidev.SpiDev()  # spi instance to read 12 bit ADC	
 spi_tc77 = spidev.SpiDev() # spi instance to read TC77 digital temperature chip
@@ -11,7 +12,14 @@ spi.max_speed_hz =  10000
 spi_tc77.max_speed_hz =  10000
 # create spi object
 # open spi port 0, device (CS) 0
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+GPIO.setup(22, GPIO.OUT) # D2 LED   
+GPIO.setup(17, GPIO.OUT) # D3 LED
+GPIO.output(22,GPIO.HIGH) # D2 LED OFF
+GPIO.output(17,GPIO.LOW) # D3 LED ON
 
+kk=0
 pcb_temp = 25.0
 channels = [0,0,0,0,0,0,0,0]
 vadj =1.0
@@ -25,6 +33,7 @@ def print_list():
     print "vadj_now:\t%2f" % vadj_now
     print "PCB_TEMP:\t%2f" % pcb_temp
     print "PCB_TEMP uV:\t%2f\t(%2f C)" % (k_type_translate_c(pcb_temp), k_type_translate_uv(k_type_translate_c(pcb_temp)))
+
 
 # ITS-90 thermocouple polynomial equations to translate temperature oC to microvolts
 def k_type_translate_c(temp):
@@ -147,6 +156,16 @@ while True:
         vadj = vadj_now * 0.1 + vadj * 0.9
         print "vref: ", vref, "vadj: ", vadj
         channels[a] = vref
+
+        if kk<10: 
+          GPIO.output(17,GPIO.LOW) # D3 LED ON
+          GPIO.output(22,GPIO.HIGH) # D2 LED OFF
+        else:
+          GPIO.output(17,GPIO.HIGH) # D3 LED OFF
+          GPIO.output(22,GPIO.LOW) # D2 LED ON
+        kk = kk + 1
+        if kk>20:
+           kk=0
     if a >= 1 and a < 8:
         ch1_adc12_5v = ((resp[1] * 256.0 + resp[2]*1.0) - vref) * vadj
         ch1 = resp[1] * 256.0 + resp[2]*1.0
