@@ -26,13 +26,14 @@ vadj =1.0
 vadj_now=1.0
 vref=0.0
 def print_list():
-    for i in range(0, len(channels)):
-        uv = channels[i]
-        print ("channel: %d\t%2f\t%2f oC (K-type) simple temp add" % (i, channels[i], k_type_translate_uv(uv)+pcb_temp))
+    for i in range(1, len(channels)):
+        # simple add uv = channels[i] + pcb_temp #- (k_type_translate_c(pcb_temp))
+        uv = channels[i] + (k_type_translate_c(pcb_temp))
+        print ('channel: %d\t %.3f uV \t %.3f oC (K-type)' % (i, channels[i], k_type_translate_uv(uv)))
     print "vadj:    \t%2f" % vadj
-    print "vadj_now:\t%2f" % vadj_now
-    print "PCB_TEMP:\t%2f" % pcb_temp
-    print "PCB_TEMP uV:\t%2f\t(%2f C)" % (k_type_translate_c(pcb_temp), k_type_translate_uv(k_type_translate_c(pcb_temp)))
+    print "vadj_now:\t%2f  Pi Vdd %f" % (vadj_now, 5.0/vadj)
+    #print "PCB_TEMP:\t%2f" % pcb_temp
+    print "PCB_TEMP %2foC uV:\t%2f\t(%2f C)" % (pcb_temp,k_type_translate_c(pcb_temp), k_type_translate_uv(k_type_translate_c(pcb_temp)))
 
 
 # ITS-90 thermocouple polynomial equations to translate temperature oC to microvolts
@@ -157,14 +158,14 @@ while True:
         print "vref: ", vref, "vadj: ", vadj
         channels[a] = vref
 
-        if kk<10: 
+        if kk<4: 
           GPIO.output(17,GPIO.LOW) # D3 LED ON
           GPIO.output(22,GPIO.HIGH) # D2 LED OFF
         else:
           GPIO.output(17,GPIO.HIGH) # D3 LED OFF
           GPIO.output(22,GPIO.LOW) # D2 LED ON
         kk = kk + 1
-        if kk>20:
+        if kk>8:
            kk=0
     if a >= 1 and a < 8:
         ch1_adc12_5v = ((resp[1] * 256.0 + resp[2]*1.0) - vref) * vadj
@@ -176,7 +177,7 @@ while True:
         # now first order filter the micro-volts to reduce random noise
         channels[a] = channels[a]*0.9 + 0.1*uV
     if a == 8: # read the temperature from the tc77
-    	resp = spi_tc77.xfer2([0x00, 0x00, 0x00, 0x00]) # transfer three bytes
+    	resp = spi_tc77.xfer2([0x00, 0x00, 0x00, 0x00]) # transfer four bytes
         number = resp[0] * 256 + resp[1]
 	pcb_temp = (number/8.0) * 0.0625
 	print "Temp: ", pcb_temp, resp
