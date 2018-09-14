@@ -27,12 +27,11 @@ vadj_now=1.0
 vref=0.0
 def print_list():
     for i in range(1, len(channels)):
-        # simple add uv = channels[i] + pcb_temp #- (k_type_translate_c(pcb_temp))
         uv = channels[i] + (k_type_translate_c(pcb_temp))
-        print ('channel: %d\t %.3f uV \t %.3f oC (K-type)' % (i, channels[i], k_type_translate_uv(uv)))
+        print ('channel: %d\t %.3f uV \t %.3f oC (K-type)' % (i, uv, k_type_translate_uv(uv)))
     print "vadj:    \t%2f" % vadj
-    print "vadj_now:\t%2f  Pi Vdd %f" % (vadj_now, 5.0/vadj)
-    #print "PCB_TEMP:\t%2f" % pcb_temp
+    print "vadj_now: %2f  Pi Vdd %f" % (vadj_now, 5.0/vadj)
+    #print "PCB_TEMP: %2f" % pcb_temp
     print "PCB_TEMP %2foC uV:\t%2f\t(%2f C)" % (pcb_temp,k_type_translate_c(pcb_temp), k_type_translate_uv(k_type_translate_c(pcb_temp)))
 
 
