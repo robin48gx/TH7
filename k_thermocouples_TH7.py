@@ -28,7 +28,10 @@ vref=0.0
 def print_list():
     for i in range(1, len(channels)):
         uv = channels[i] + (k_type_translate_c(pcb_temp))
-        print ('channel: %d\t %.3f uV \t %.3f oC (K-type)' % (i, uv, k_type_translate_uv(uv)))
+        if uv < -6500:
+          print ('channel: %d\t %.3f uV \t %.3f oC (K-type) ERROR' % (i, uv, k_type_translate_uv(uv))) 
+        else:
+          print ('channel: %d\t %.3f uV \t %.3f oC (K-type)' % (i, uv, k_type_translate_uv(uv)))
     print "vadj:    \t%2f" % vadj
     print "vadj_now: %2f  Pi Vdd %f" % (vadj_now, 5.0/vadj)
     #print "PCB_TEMP: %2f" % pcb_temp
