@@ -8,12 +8,12 @@ in /etc/group.
 
 Clone the git hub repo here,
 
-    git clone https://github.com/robin48gx/TH7.git 
+    $ git clone https://github.com/robin48gx/TH7.git 
 
 
 change directory to TH7 and then run
 
-    $python k_thermocouples_TH7.py
+    $ python k_thermocouples_TH7.py
 
 This is a simple terminal program that displays the microvolts received from
 the thermocouples and displays them in centigrade (for K type).
