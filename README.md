@@ -10,7 +10,9 @@ change directory to TH7 and then run
 $python k_thermocouples_TH7.py
 
 This is a simple terminal program that displays the micro volts received from
-the thermocouples and display them in centigrade (for K type).
+the thermocouples and displays them in centigrade (for K type).
+It also displays the PCB temperature and  the Vcc (voltage from USB to the pi
+which is necessary for accurate calculation of microvolts).
 
 Feel free to branch off this to make a temperature logger or a web interface.
 
