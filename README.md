@@ -22,7 +22,7 @@ the value is necessary for accurate calculation of microvolts).
 
 Feel free to branch off this to make a temperature logger or a web interface.
 
-For h/w 0.4 and on open thermocouple connection display a very low 
+For h/w 0.4 and an open thermocouple connection display a very low 
 micro-volts figure (typically < -7000) which is out of range for most thermocouples
 and out of the range that most temperature readings would every require.
 This means open thermocouples can be eror flagged (as has been implemented in the
