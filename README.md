@@ -1,5 +1,5 @@
 # TH7
-Code to read up to seven from thermocouple inputs  from the raspberry pi using the SDS TH7 PCB
+Code to read up to seven thermocouple inputs  from the raspberry pi using the SDS TH7 PCB
 
 Enable spi in raspi-config.
 
