@@ -5,6 +5,16 @@ import Tkinter	# requires python-tk (apt-get install python-tk)
 from Tkinter import *
 import random
 
+
+######################################################################
+#
+# Thermometer graphics demo in python / tkinter
+#
+# Tkinter graphics experiment to display some thermometers
+#
+# Uses random numbers so can be run without at TH7 installed
+######################################################################
+
 curtime = ''
 curtemp = ''
 newtemp = -299.0
