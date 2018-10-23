@@ -4,6 +4,14 @@ import spidev
 import time
 import RPi.GPIO as GPIO
 
+#
+# TH7 thermocouple reader for the raspberry pi
+#
+# This program displays corrected micro-volts
+# and temperatures for seven `k' type thermocouples
+# on a terminal or ssh terminial.
+#
+
 spi = spidev.SpiDev()  # spi instance to read 12 bit ADC	
 spi_tc77 = spidev.SpiDev() # spi instance to read TC77 digital temperature chip
 spi.open(0, 0)
