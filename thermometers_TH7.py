@@ -13,6 +13,9 @@ import RPi.GPIO as GPIO
 #
 # TH7 thermocouple reader for the raspberry pi
 #
+# The array below `temps' holds the temperatures calculated
+# in centigrade
+#
 temps = [ -200, -273, -100, 100, 500, 400, 250 ]
 
 # set up the I/O to read the thermocouples
@@ -38,6 +41,9 @@ vadj =1.0
 vadj_now=1.0
 vref=0.0
 
+# print the micro-volts, voltage supplied to pi and the voltage adjustment factors
+# onto a terminal
+#
 def print_list():
     for i in range(1, len(channels)):
         uv = channels[i] + (k_type_translate_c(pcb_temp))
@@ -53,7 +59,9 @@ def print_list():
 
 
 # ITS-90 thermocouple polynomial equations to translate temperature oC to microvolts
-# ITS-90 thermocouple polynomial equations to translate temperature oC to microvolts
+# for `k' type thermocouples
+#
+#
 def k_type_translate_c(temp):
     c0 =  c1 =  c2 =  c3 =  c4 =  c5 =  c6 =  c7 =  c8 =  c9 =  c10 = 0.0
     t = et = mikrovolts = 0.0
@@ -204,14 +212,6 @@ def read_thermocouples():
 	pcb_temp = (number/8.0) * 0.0625
 	print "Temp: ", pcb_temp, resp
 
-  # except KeyboardInterrupt:
-  # Ctrl+C pressed, so...
-  #   spi_tc77.close()
-  #   spi.close() # close the ports before exit
-
-
-
-
 # set up the gui
 #
 curtime = ''
@@ -275,17 +275,17 @@ def update_gui():
             
             
             if kelvin >= 273.15 + 40:
-              filc = 'pink'
+              filc = 'pink' # warm
             if kelvin >= 273.15 + 70: # 120oC
-              filc = 'red'
+              filc = 'red' # hot
             if kelvin < 273.15 + 40:
-              filc = 'orange'
+              filc = 'orange' # human levels of body temperature, go orange
             if kelvin < 273.15 + 24:
-              filc = 'grey'
+              filc = 'grey' # coldish
             if kelvin < 273.15:
-              filc = 'blue'
+              filc = 'blue' # cold
             if kelvin < -15+273.15:
-              filc = 'black'
+              filc = 'black' # very very cold, like sweden in the winter cold
             
             x1 = 115 + i * 50
             x2 = 125 + i * 50
