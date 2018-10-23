@@ -30,5 +30,5 @@ For h/w 0.4 and above, an open thermocouple connection display a very low
 micro-volts figure (typically < -7000) which is out of range for most thermocouples
 and out of the range that most temperature readings would ever require (its below
 abs zero for a k type for instance).
-This means open thermocouples can be eror flagged (as has been implemented in the
-pyhton `k` type thermocouple in this repo).
+This means open thermocouples can be error flagged (as has been implemented for the
+python `k` type thermocouple in this repo).
