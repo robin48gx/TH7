@@ -247,7 +247,7 @@ class TH7gui():
 update_gui_counter = 0
 
 def update_gui():
-  INTERVAL = 10
+  INTERVAL = 1
   global curtime
   global curtemp
   global timeobj
