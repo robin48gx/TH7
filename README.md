@@ -17,12 +17,13 @@ change directory to TH7 and then run
 
 The python file ssh_terminal_TH7.py is a simple terminal program
 that displays the microvolts received from
-the thermocouples and displays them in centigrade (for K type).
+the thermocouples and displays them in centigrade (for `k` type).
 It also displays the PCB temperature and  the Vcc (voltage from USB to the pi;
 the value is necessary for accurate calculation of microvolts).
 
 The python file thermometers_TH7.py adds to this with 
-tkinter drawn thermometers.
+tkinter drawn thermometers. You may need the tkinter python 
+modules for this : i.e. apt-get install python-tk.
 
 Feel free to branch off this to make a temperature logger or a web interface.
 
