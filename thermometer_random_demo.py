@@ -12,7 +12,7 @@ import random
 #
 # Tkinter graphics experiment to display some thermometers
 #
-# Uses random numbers so can be run without at TH7 installed
+# Uses random numbers so can be run without a TH7 installed
 ######################################################################
 
 curtime = ''
