@@ -16,7 +16,7 @@ import RPi.GPIO as GPIO
 # The array below `temps' holds the temperatures calculated
 # in centigrade
 #
-temps = [ -200, -273, -100, 100, 500, 400, 250 ]
+temps = [ 20.3,20.3,20.3,20.3,20.3,20.3,20.3 ]
 
 # set up the I/O to read the thermocouples
 #
@@ -45,6 +45,7 @@ vref=0.0
 # onto a terminal
 #
 def print_list():
+    global pcb_temp
     for i in range(1, len(channels)):
         uv = channels[i] + (k_type_translate_c(pcb_temp))
         if uv < -6500:
@@ -168,6 +169,7 @@ def read_thermocouples():
     global vref
     global vadj
     global led_counter
+    global pcb_temp
     a = a + 1
     if a>8:
       os.system("clear") # this is for tunning in a terminal over ssh on a pi
