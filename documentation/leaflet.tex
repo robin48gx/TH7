@@ -1,35 +1,53 @@
-\documentclass[a4paper,10pt]{article}
+%\documentclass[a4paper,10pt]{article}
+\documentclass[10pt,foldmark]{leaflet}
+\renewcommand*\foldmarkrule{.3mm}
+\renewcommand*\foldmarklength{5mm}
+\usepackage{qrcode}
+\usepackage{amsmath}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{mathptmx}
+\usepackage[scaled=0.9]{helvet}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
-%opening
-\title{TH7}
-\author{R.P.Clark}
-\begin{document}
-\maketitle
-\begin{abstract}
-This leaflet describes the TH7 generic thermocouple reader pi-hat/PCB for the raspberry pi.
-\end{abstract}
 
-\begin{figure}[ht]
+%opening
+\title{S.D.S. TH7: Seven Channel Thermocouple  Pi Hat}
+\author{Scientific Data Systems}
+\begin{document}
+%\thispagestyle{empty} % get rid of page number does not work
+\pagenumbering{gobble}
+\maketitle
+% \begin{abstract}
+% This leaflet describes the TH7 generic thermocouple reader pi-hat/PCB for the raspberry pi.
+% \end{abstract}
+
+\begin{figure}
  \centering
- \includegraphics[width=400pt]{TH7_tea_light.jpg}
- % TH7_tea_light.JPG: 0x0 pixel, 300dpi, 0.00x0.00 cm, bb=
- \caption{Thermocouple over a tea light flame at circa ${500}^{\circ} C$.}
- \label{fig:pi}
+ \includegraphics[width=200pt]{./TH7_0p4_IMG_20181010_184556D.jpg}
+ % TH7_0p4_IMG_20181010_184556D.jpg: 0x0 pixel, 300dpi, 0.00x0.00 cm, bb=
+ \caption{TH7 with a `k' type probe fitted.}
+ \label{fig:th7}
 \end{figure}
 
 
-\section{TH7 description}
-The TH7 is a raspbery pi hat (see figure~\ref{fig:th7}) with on board PCB temperature measurement that
-provides seven thermocouple inputs.
-Uncalibrated this gives a typical accuracy of $\pm$ ${2}^{\circ} C$.
-It also provides two user programmable LEDS and displays the supply voltage to the pi.
 
+\section{TH7 description}
+The TH7 is a raspbery pi hat (see figure~\ref{fig:th7})  that
+provides seven thermocouple inputs. This mean seven different temperatures can be read
+simultaneously. Its possible uses are 
+logging/monitoring and control of temperature sensitive processes.
+%
+With with on board PCB temperature measurement
+it provides full Cold~Junction~Compensation (CJC).
+Uncalibrated the TH7 gives a typical accuracy of $\pm$ ${2}^{\circ} C$.
+It also provides two user programmable LEDS and displays the supply voltage to the pi.
+\clearpage
 The TH7 is a generic thermocouple reader, and therefore should work with any thermocouple.
 Software defines its micro-volt to temperature and cold~junction~compensation characteristics.
 Software support has been written for the `k' type only currently.
 
-\clearpage
+%\clearpage
 \subsection{Characteristics}
 The TH7 offers:
 \begin{itemize}
@@ -37,10 +55,10 @@ The TH7 offers:
  \item Loss of/disconnection of thermocouple detection;
  \item Seven inputs;
  \item Uses the rasberry pi standard python SPI interface;
- \item Python coding examples (https://github.com/robin48gx/TH7);
+ \item Python coding examples \\ https://github.com/robin48gx/TH7;
  \item Two user Programmable LEDs;
  \item On chip PCB temperature measurement;
-  \item Can be used as a general micro-volt reader with a $\approx -6000 \mu V \rightarrow 40000 \mu V range$.
+  \item Can be used as a general micro-volt reader with a $\approx -6000 \mu V \rightarrow 40000 \mu V$ range.
 \end{itemize} 
 
 \section{Instructions}
@@ -65,9 +83,23 @@ Epoxy resin is often useful for gluing thermcouples to devices under long term t
  \includegraphics[width=156pt]{./TH7_0p3.jpg}
  % TH7_0p3.jpg: 0x0 pixel, 300dpi, 0.00x0.00 cm, bb=
  \caption{TH7 thermocouple interface PCB/pi~Hat}
- \label{fig:th7}
+ \label{fig:th7_2}
 \end{figure}
 
+\clearpage
+\begin{figure}[ht]
+ \centering
+ \includegraphics[width=200pt]{TH7_tea_light.jpg}
+ % TH7_tea_light.JPG: 0x0 pixel, 300dpi, 0.00x0.00 cm, bb=
+ \caption{Thermocouple over a tea light flame at circa ${500}^{\circ} C$.}
+ \label{fig:pi}
+\end{figure}
+\mbox{}
+\vfill
+
+\qrcode[height=1in]{http://www.scientificdatasystems.co.uk}
+
+Contact: info@scientificdatasystems.co.uk
 
 
 \end{document}
