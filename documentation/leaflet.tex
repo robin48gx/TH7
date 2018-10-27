@@ -20,12 +20,12 @@ This leaflet describes the TH7 generic thermocouple reader pi-hat/PCB for the ra
 
 
 \section{TH7 description}
-The TH7 is a raspbery pi hat (see figure~\ref{fig:th7} with on board PCB temperature measurement that
+The TH7 is a raspbery pi hat (see figure~\ref{fig:th7}) with on board PCB temperature measurement that
 provides seven thermocouple inputs.
 Uncalibrated this gives a typical accuracy of $\pm$ ${2}^{\circ} C$.
 It also provides two user programmable LEDS and displays the supply voltage to the pi.
 
-The TH7 is a generic thermcouple reader, and therefore should work with any thermocouple.
+The TH7 is a generic thermocouple reader, and therefore should work with any thermocouple.
 Software defines its micro-volt to temperature and cold~junction~compensation characteristics.
 Software support has been written for the `k' type only currently.
 
@@ -38,14 +38,14 @@ The TH7 offers:
  \item Seven inputs;
  \item Uses the rasberry pi standard python SPI interface;
  \item Python coding examples (https://github.com/robin48gx/TH7);
- \item Two user Programmable LEDS;
+ \item Two user Programmable LEDs;
  \item On chip PCB temperature measurement;
   \item Can be used as a general micro-volt reader with a $\approx -6000 \mu V \rightarrow 40000 \mu V range$.
 \end{itemize} 
 
 \section{Instructions}
 \subsection{Connection to terminal block}
-Connect the thermocouples using the hital~tech connectors and ensdure the wires make contact with the 
+Connect the thermocouples using the hital~tech connectors and ensure the wires make contact with the 
 connector metal clamps (see figure~\ref{fig:con}).
 \subsection{Conection to the device being measured}
 Always apply insulation to the thermocouples (i.e. do not ground them).
@@ -55,7 +55,7 @@ Epoxy resin is often useful for gluing thermcouples to devices under long term t
  \centering
  \includegraphics[width=200pt]{./wiring.jpg}
  % wiring.JPG: 0x0 pixel, 300dpi, 0.00x0.00 cm, bb=
- \caption{Wiring European standard `k' type thermocouples Wiring (green is plus and the green and white is minus; other countries may use different colour schemes). 
+ \caption{image shows wiring for European standard `k' type thermocouples Wiring (green is plus and the green and white is minus; other countries may use different colour schemes). 
  If the thermoucouple is inserted with incorrect polarity it will read incorrectly and temperature from it will be seen to go down when heat is applied to it.}
  \label{fig:con}
 \end{figure}
