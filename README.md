@@ -13,7 +13,7 @@ Clone the git hub repo here,
 
 change directory to TH7 and then run
 
-    $ python k_thermocouples_TH7.py
+    $ python ssh_terminal_TH7.py
 
 The python file ssh_terminal_TH7.py is a simple terminal program
 that displays the microvolts received from
