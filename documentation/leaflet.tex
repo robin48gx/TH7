@@ -12,11 +12,12 @@ This leaflet describes the TH7 generic thermocouple reader pi-hat/PCB for the ra
 
 \begin{figure}[ht]
  \centering
- \includegraphics[width=300pt]{TH7_tea_light.JPG}
+ \includegraphics[width=400pt]{TH7_tea_light.jpg}
  % TH7_tea_light.JPG: 0x0 pixel, 300dpi, 0.00x0.00 cm, bb=
  \caption{Thermocouple over a tea light flame at circa ${500}^{\circ} C$.}
  \label{fig:pi}
 \end{figure}
+
 
 \section{TH7 description}
 The TH7 is a raspbery pi hat (see figure~\ref{fig:th7} with on board PCB temperature measurement that
@@ -24,31 +25,38 @@ provides seven thermocouple inputs.
 Uncalibrated this gives a typical accuracy of $\pm$ ${2}^{\circ} C$.
 It also provides two user programmable LEDS and displays the supply voltage to the pi.
 
-It ius a generic thermcouple reader, and therefore should work with any thermocouple.
+The TH7 is a generic thermcouple reader, and therefore should work with any thermocouple.
+Software defines its micro-volt to temperature and cold~junction~compensation characteristics.
 Software support has been written for the `k' type only currently.
 
+\clearpage
+\subsection{Characteristics}
 The TH7 offers:
 \begin{itemize}
- \item Full cold junction compensation
- \item Loss of/disconnection of thermocouple detection
- \item Seven inputs
- \item Uses the rasberry pi standard python SPI interface
- \item Python coding examples (https://github.com/robin48gx/TH7).
+ \item Full cold junction compensation;
+ \item Loss of/disconnection of thermocouple detection;
+ \item Seven inputs;
+ \item Uses the rasberry pi standard python SPI interface;
+ \item Python coding examples (https://github.com/robin48gx/TH7);
+ \item Two user Programmable LEDS;
+ \item On chip PCB temperature measurement;
+  \item Can be used as a general micro-volt reader with a $\approx -6000 \mu V \rightarrow 40000 \mu V range$.
 \end{itemize} 
 
 \section{Instructions}
-
+\subsection{Connection to terminal block}
 Connect the thermocouples using the hital~tech connectors and ensdure the wires make contact with the 
-connector metal clams (see figure~\ref{fig:con}.
+connector metal clamps (see figure~\ref{fig:con}).
+\subsection{Conection to the device being measured}
 Always apply insulation to the thermocouples (i.e. do not ground them).
 Epoxy resin is often useful for gluing thermcouples to devices under long term temperature test.
 
 \begin{figure}[h]
  \centering
- \includegraphics[width=200pt]{./wiring.JPG}
+ \includegraphics[width=200pt]{./wiring.jpg}
  % wiring.JPG: 0x0 pixel, 300dpi, 0.00x0.00 cm, bb=
- \caption{Wiring European standard `k' type thermocouples Wiring. The green is plus and the green and white is minus. Other countries may use different colour schemes. 
- If the thermoucouple is inserted with incorrect polarity temperature will be seen to go down when heat is applied to it.}
+ \caption{Wiring European standard `k' type thermocouples Wiring (green is plus and the green and white is minus; other countries may use different colour schemes). 
+ If the thermoucouple is inserted with incorrect polarity it will read incorrectly and temperature from it will be seen to go down when heat is applied to it.}
  \label{fig:con}
 \end{figure}
 
