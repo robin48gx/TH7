@@ -98,8 +98,51 @@ Epoxy resin is often useful for gluing thermcouples to devices under long term t
 \vfill
 
 \qrcode[height=1in]{http://www.scientificdatasystems.co.uk}
-
 Contact: info@scientificdatasystems.co.uk
+
+
+\section{What Thermocouples are}
+
+Thermocouples are two different types of metal wire welded together
+at one end.
+When there is a heat difference between two ends of the wire
+the two metals produce a small voltage.
+This is typically very small, for `k' type thermocouples for instance
+this is about 40 millionths of a volt per Centigrade change in temperature.
+This voltage is so small that an ordinary voltage reading chip on
+a computer cannot easily read it. The small signal is usually amplified
+to take it into the range that a computer chip can read it.
+The TH7 has an amplifier that takes the small voltage and amplifies it by 100.
+It can than be read into the raspberry pi where it can be converted into
+a temperature reading with adequate accuracy.
+
+\subsection{Cold Junction Compensation}
+
+The tables and equations to convert thermocouple voltage to
+temperature all assume that the instrument end is at zero centigrade.
+
+Because the voltage read at the TH7 input is not at zero centigrade (well not normally!)
+the junction of the wires {\em at the connector block}  makes a thermocouple its-self, but in opposition to
+the one at the measurement end. For instance, with a `k' type thermocouple
+the volatge read at $25^\circ C$ would read around $1000 \mu V$ low!
+
+The TH7 has a temperature measurement chip placed right by the terminal block for the thermocouple inputs.
+By knowing this temperature, the TH7 works out what the missing voltage is
+and adds it in before calculating the final temperature.
+
+\subsection{Using the TH7 as a micro-volt reader}
+
+The TH7 can be used as a general micro-volt reader.
+The voltage source must be floating i.e. not grounded.
+A range of $\approx -6mV \rightarrow 40mV$ can be read.
+
+\mbox{}
+\vfill
+
+\qrcode[height=1in]{http://www.scientificdatasystems.co.uk}
+Contact: info@scientificdatasystems.co.uk
+
+
 
 
 \end{document}
