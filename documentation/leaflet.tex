@@ -33,12 +33,12 @@
 
 
 \section{TH7 description}
-The TH7 is a raspbery pi hat (see figure~\ref{fig:th7})  that
-provides seven thermocouple inputs. This mean seven different temperatures can be read
+The TH7 is a raspbery pi hat   that
+provides seven thermocouple inputs (see figure~\ref{fig:th7}). This mean seven different temperatures can be read
 simultaneously. Its possible uses are 
 logging/monitoring and control of temperature sensitive processes.
 %
-With with on board PCB temperature measurement
+With on board PCB temperature measurement
 it provides full Cold~Junction~Compensation (CJC).
 Uncalibrated the TH7 gives a typical accuracy of $\pm$ ${2}^{\circ} C$.
 It also provides two user programmable LEDS and displays the supply voltage to the pi.
@@ -98,8 +98,11 @@ Epoxy resin is often useful for gluing thermcouples to devices under long term t
 \vfill
 
 \qrcode[height=1in]{http://www.scientificdatasystems.co.uk}
+
+\vspace{0.5cm}
 Contact: info@scientificdatasystems.co.uk
 
+\clearpage
 
 \section{What Thermocouples are}
 
@@ -109,12 +112,18 @@ When there is a heat difference between two ends of the wire
 the two metals produce a small voltage.
 This is typically very small, for `k' type thermocouples for instance
 this is about 40 millionths of a volt per Centigrade change in temperature.
-This voltage is so small that an ordinary voltage reading chip on
-a computer cannot easily read it. The small signal is usually amplified
+%
+This voltage is so small that ordinary voltage reading chips, Analogue to Digital Converters (ADC),  cannot easily read them
+to any reasonable accuracy.
+%
+The small signal is usually amplified
 to take it into the range that a computer chip can read it.
 The TH7 has an amplifier that takes the small voltage and amplifies it by 100.
 It can than be read into the raspberry pi where it can be converted into
 a temperature reading with adequate accuracy.
+Wikipedia has a good entry on thermocouples.
+https://en.wikipedia.org/wiki/Thermocouple.
+%as a qrcode, \qrcode[height=1in]{https://en.wikipedia.org/wiki/Thermocouple}
 
 \subsection{Cold Junction Compensation}
 
@@ -128,21 +137,25 @@ the volatge read at $25^\circ C$ would read around $1000 \mu V$ low!
 
 The TH7 has a temperature measurement chip placed right by the terminal block for the thermocouple inputs.
 By knowing this temperature, the TH7 works out what the missing voltage is
-and adds it in before calculating the final temperature.
+and adds it in before calculating the final temperature. This is commonly known as cold junction compensation.`
 
 \subsection{Using the TH7 as a micro-volt reader}
 
 The TH7 can be used as a general micro-volt reader.
 The voltage source must be floating i.e. not grounded.
 A range of $\approx -6mV \rightarrow 40mV$ can be read.
+\clearpage
+\subsection{Pricing}
 
+TH7 boards are currently available for 50 pounds each with a four week lead time.
+\vspace{3.5cm}
+%\clearpage
 \mbox{}
 \vfill
-
 \qrcode[height=1in]{http://www.scientificdatasystems.co.uk}
+
+\vspace{0.5cm}
 Contact: info@scientificdatasystems.co.uk
-
-
 
 
 \end{document}
