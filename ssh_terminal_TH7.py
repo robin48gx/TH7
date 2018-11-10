@@ -2,8 +2,17 @@ import math
 import os
 import spidev
 import time
+import datetime
 import RPi.GPIO as GPIO
+import logging
 
+dt = datetime.datetime.now()
+logging.basicConfig(filename='TH7.log',level=logging.DEBUG)
+#logging.info('So should this')
+logging.warning('TH7 LOG FILE STARTED ' + dt.__str__())
+
+
+old_min = datetime.datetime.now().minute
 #
 # TH7 thermocouple reader for the raspberry pi
 #
@@ -26,7 +35,7 @@ GPIO.setup(22, GPIO.OUT) # D2 LED
 GPIO.setup(17, GPIO.OUT) # D3 LED
 GPIO.output(22,GPIO.HIGH) # D2 LED OFF
 GPIO.output(17,GPIO.LOW) # D3 LED ON
-
+first_run = 1
 kk=0
 pcb_temp = 25.0
 channels = [0,0,0,0,0,0,0,0]
@@ -34,17 +43,35 @@ vadj =1.0
 vadj_now=1.0
 vref=0.0
 def print_list():
+    global old_min
+    global logging
+    print datetime.datetime.now()
+    min = datetime.datetime.now().minute
+    #print 'min %d' % ( min )
+    if min != old_min:
+      logging.info ( '-------- TH7 ---------------------' + datetime.datetime.now().__str__()  )
+
     for i in range(1, len(channels)):
         uv = channels[i] + (k_type_translate_c(pcb_temp))
         if uv < -6500:
-          print ('channel: %d\t %.3f uV \t %.3f oC (K-type) ERROR' % (i, uv, k_type_translate_uv(uv))) 
+          st = ('channel: %d\t %.3f uV \t %.3f oC (K-type) ERROR' % (i, uv, k_type_translate_uv(uv))) 
         else:
-          print ('channel: %d\t %.3f uV \t %.3f oC (K-type)' % (i, uv, k_type_translate_uv(uv)))
-    print "vadj:    \t%2f" % vadj
-    print "vadj_now: %2f  Pi Vdd %f" % (vadj_now, 5.0/vadj)
+          st = ('channel: %d\t %.3f uV \t %.3f oC (K-type)' % (i, uv, k_type_translate_uv(uv)))
+        print st
+        if min != old_min:
+            logging.info( st )
+    vadjst = "vadj:    \t%2f" % vadj
+    vadj2st =  "vadj_now: %2f  Pi Vdd %f" % (vadj_now, 5.0/vadj)
     #print "PCB_TEMP: %2f" % pcb_temp
-    print "PCB_TEMP %2foC uV:\t%2f\t(%2f C)" % (pcb_temp,k_type_translate_c(pcb_temp), k_type_translate_uv(k_type_translate_c(pcb_temp)))
-
+    uvadj =  "PCB_TEMP %2foC uV:\t%2f\t(%2f C)" % (pcb_temp,k_type_translate_c(pcb_temp), k_type_translate_uv(k_type_translate_c(pcb_temp)))
+    print vadjst
+    print vadj2st
+    print uvadj
+    if min != old_min:
+        logging.info ( vadjst )
+        logging.info ( vadj2st )
+        logging.info ( uvadj )
+        old_min = min
 
 # ITS-90 thermocouple polynomial equations to translate temperature oC to microvolts
 def k_type_translate_c(temp):
@@ -146,6 +173,9 @@ def k_type_translate_uv(uV):
 a = 0
 ch1_uv = 0.0
 result=0
+
+
+
 while True:
   try:
     a = a + 1
@@ -164,6 +194,8 @@ while True:
     if a == 0:
         vref = resp[1] * 256.0 + resp[2] * 1.0
         vadj_now = vref/3355.4432
+        if first_run == 1:
+            vadj = vadj_now
         vadj = vadj_now * 0.1 + vadj * 0.9
         print "vref: ", vref, "vadj: ", vadj
         channels[a] = vref
@@ -185,10 +217,15 @@ while True:
         # the signal has been amplified G=100 so we need to multiply by 10K
         uV = bigV*10000
         # now first order filter the micro-volts to reduce random noise
-        channels[a] = channels[a]*0.9 + 0.1*uV
+        if first_run == 1:
+           channels[a] = uV
+        else:
+           channels[a] = channels[a]*0.9 + 0.1*uV
     if a == 8: # read the temperature from the tc77
     	resp = spi_tc77.xfer2([0x00, 0x00, 0x00, 0x00]) # transfer four bytes
         number = resp[0] * 256 + resp[1]
+        if first_run == 1:
+          first_run = 0
 	pcb_temp = (number/8.0) * 0.0625
 	print "Temp: ", pcb_temp, resp
 
