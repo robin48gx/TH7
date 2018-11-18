@@ -18,6 +18,9 @@ import RPi.GPIO as GPIO
 #
 temps = [ 20.3,20.3,20.3,20.3,20.3,20.3,20.3 ]
 
+# start of the thermometers at bottom of page
+ybase = 600
+
 # set up the I/O to read the thermocouples
 #
 spi = spidev.SpiDev()  # spi instance to read 12 bit ADC	
@@ -40,6 +43,22 @@ channels = [0,0,0,0,0,0,0,0]
 vadj =1.0
 vadj_now=1.0
 vref=0.0
+# compress movement for thermometers
+#
+
+def tcompress ( t ):
+   if t < -55:
+      t = ((t+55)/5 - 55)
+   if t > 120:
+      t = (t/5 + 120)
+   return t
+
+
+
+# assume kelvin input
+#
+def tcompressk ( t ):
+    return tcompress(t -273.15)*2
 
 # print the micro-volts, voltage supplied to pi and the voltage adjustment factors
 # onto a terminal
@@ -254,6 +273,7 @@ def update_gui():
   global curtemp
   global timeobj
   global newtemp
+  global ybase
   global update_gui_counter
   deg = unichr(176).encode("utf-8")
   read_thermocouples()
@@ -280,7 +300,7 @@ def update_gui():
               filc = 'pink' # warm
             if kelvin >= 273.15 + 70: # 120oC
               filc = 'red' # hot
-            if kelvin < 273.15 + 40:
+            if kelvin < 273.15 + 35:
               filc = 'orange' # human levels of body temperature, go orange
             if kelvin < 273.15 + 24:
               filc = 'grey' # coldish
@@ -291,35 +311,56 @@ def update_gui():
             
             x1 = 115 + i * 50
             x2 = 125 + i * 50
-            y1 =  (800)
-            y2 =  (800)-kelvin
+            y1 =  (ybase)
+            y2 = (ybase)-tcompressk(kelvin)
+            #y2 =  (ybase)-kelvin
             #print " x1 ",x1, " y1 ", y1, " x2 ", x2, " y2 ", y2
-            templine[i] = TH7_window.canvas.create_text(x1, y1+50, text=t1, font=("Helvetica", "12", "bold"), fill='green')
+            templine[i] = TH7_window.canvas.create_text(x1, y1+250, text=t1, font=("Helvetica", "12", "bold"), fill='green')
             templine2[i] = TH7_window.canvas.create_rectangle(x1, y1, x2,  y2, fill=filc)
             
-            tll = TH7_window.canvas.create_oval( x1-15, 800+30, x1+25, 800, fill=filc)
+            #tll = TH7_window.canvas.create_oval( x1-15, 800+30, x1+25, 800, fill=filc)
     
     #
-    templine3 = TH7_window.canvas.create_text ( 55, y1-73.15, text="-200oC", font=("Helvetica", "18", "bold"), fill='black') 
-    templine4 = TH7_window.canvas.create_line ( 55, y1-73.15, 700, y1-73.15, fill='grey')
     #
-    templine3 = TH7_window.canvas.create_text ( 55, y1-173.15, text="-100"+deg+"C", font=("Helvetica", "18", "bold"), fill='black') 
-    templine4 = TH7_window.canvas.create_line ( 55, y1-173.15, 700, y1-173.15, fill='grey')
+    y1pos = ybase - tcompressk(0.0)
+    templine3 = TH7_window.canvas.create_text ( 55, y1pos, text="-273.15", font=("Helvetica", "18", "bold"), fill='black') 
+    templine4 = TH7_window.canvas.create_line ( 55, y1pos, 700, y1pos, fill='grey')
     #
-    templine3 = TH7_window.canvas.create_text ( 55, y1-273.15, text="-0oC", font=("Helvetica", "18", "bold"), fill='black') 
-    templine4 = TH7_window.canvas.create_line ( 55, y1-273.15, 700, y1-273.15, fill='grey')
+    y1pos = ybase - tcompressk(273.15-200.0)
+    templine3 = TH7_window.canvas.create_text ( 55, y1pos, text="-200oC", font=("Helvetica", "18", "bold"), fill='blue') 
+    templine4 = TH7_window.canvas.create_line ( 55, y1pos, 700, y1pos, fill='grey')
     #
-    templine3 = TH7_window.canvas.create_text ( 55, y1-373.15, text="100oC", font=("Helvetica", "18", "bold"), fill='black') 
-    templine4 = TH7_window.canvas.create_line ( 55, y1-373.15, 700, y1-373.15, fill='grey')
+    y1pos = ybase - tcompressk(273.15-100.0)
+    templine3 = TH7_window.canvas.create_text ( 55, y1pos, text="-100"+deg+"C", font=("Helvetica", "18", "bold"), fill='blue') 
+    templine4 = TH7_window.canvas.create_line ( 55, y1pos, 700, y1pos, fill='grey')
     #
-    templine3 = TH7_window.canvas.create_text ( 55, y1-473.15, text="200oC", font=("Helvetica", "18", "bold"), fill='black') 
-    templine4 = TH7_window.canvas.create_line ( 55, y1-473.15, 700, y1-473.15, fill='grey')
+    y1pos = ybase - tcompressk(273.15-0.0)
+    templine3 = TH7_window.canvas.create_text ( 55, y1pos, text="-0oC", font=("Helvetica", "18", "bold"), fill='black') 
+    templine4 = TH7_window.canvas.create_line ( 55, y1pos, 700, y1pos, fill='grey')
     #
-    templine3 = TH7_window.canvas.create_text ( 55, y1-573.15, text="300oC", font=("Helvetica", "18", "bold"), fill='black') 
-    templine4 = TH7_window.canvas.create_line ( 55, y1-573.15, 700, y1-573.15, fill='grey')
+    y1pos = ybase - tcompressk(273.15+100.0)
+    templine3 = TH7_window.canvas.create_text ( 55, y1pos, text="100oC", font=("Helvetica", "18", "bold"), fill='yellow') 
+    templine4 = TH7_window.canvas.create_line ( 55, y1pos, 700, y1pos, fill='grey')
     #
-    templine3 = TH7_window.canvas.create_text ( 55, y1-673.15, text="400oC", font=("Helvetica", "18", "bold"), fill='black') 
-    templine4 = TH7_window.canvas.create_line ( 55, y1-673.15, 700, y1-673.15, fill='grey')
+    y1pos = ybase - tcompressk(273.15+200.0)
+    templine3 = TH7_window.canvas.create_text ( 55, y1pos, text="200oC", font=("Helvetica", "18", "bold"), fill='red') 
+    templine4 = TH7_window.canvas.create_line ( 55, y1pos, 700, y1pos, fill='grey')
+    #
+    y1pos = ybase - tcompressk(273.15+300.0)
+    templine3 = TH7_window.canvas.create_text ( 55, y1pos, text="300oC", font=("Helvetica", "18", "bold"), fill='red') 
+    templine4 = TH7_window.canvas.create_line ( 55, y1pos, 700, y1pos, fill='grey')
+    #
+    y1pos = ybase - tcompressk(273.15+400.0)
+    templine3 = TH7_window.canvas.create_text ( 55, y1pos, text="400oC", font=("Helvetica", "18", "bold"), fill='red') 
+    templine4 = TH7_window.canvas.create_line ( 55, y1pos, 700, y1pos, fill='grey')
+    #
+    y1pos = ybase - tcompressk(273.15+600.0)
+    templine3 = TH7_window.canvas.create_text ( 55, y1pos, text="600oC", font=("Helvetica", "18", "bold"), fill='red') 
+    templine4 = TH7_window.canvas.create_line ( 55, y1pos, 700, y1pos, fill='grey')
+    #
+    y1pos = ybase - tcompressk(273.15+800.0)
+    templine3 = TH7_window.canvas.create_text ( 55, y1pos, text="800oC", font=("Helvetica", "18", "bold"), fill='red') 
+    templine4 = TH7_window.canvas.create_line ( 55, y1pos, 700, y1pos, fill='grey')
   
     # get time
     newtime = time.strftime('%y:%m:%d::%H:%M:%S')
