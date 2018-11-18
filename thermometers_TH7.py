@@ -339,7 +339,7 @@ def update_gui():
     templine4 = TH7_window.canvas.create_line ( 55, y1pos, 700, y1pos, fill='grey')
     #
     y1pos = ybase - tcompressk(273.15+100.0)
-    templine3 = TH7_window.canvas.create_text ( 55, y1pos, text="100oC", font=("Helvetica", "18", "bold"), fill='yellow') 
+    templine3 = TH7_window.canvas.create_text ( 55, y1pos, text="100oC", font=("Helvetica", "18", "bold"), fill='black') 
     templine4 = TH7_window.canvas.create_line ( 55, y1pos, 700, y1pos, fill='grey')
     #
     y1pos = ybase - tcompressk(273.15+200.0)
