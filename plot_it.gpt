@@ -1,0 +1,6 @@
+
+
+set grid
+set yrange[-10:30]
+plot "dd.txt"
+!sleep 60
