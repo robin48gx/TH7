@@ -2,5 +2,5 @@
 
 set grid
 set yrange[-10:30]
-plot "dd.txt"
+plot "th7_ch1.txt"
 !sleep 60
