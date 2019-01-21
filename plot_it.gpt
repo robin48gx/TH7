@@ -3,4 +3,4 @@
 set grid
 set yrange[-10:30]
 plot "th7_ch1.txt"
-!sleep 60
+!sleep 20
