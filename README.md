@@ -27,6 +27,8 @@ If logging is required run with nohup, i.e.
     $ nohup python ssh_terminal_TH7.py > /dev/null & 
     
 The logging will then continue on the pi even if the terminal running it is closed.
+The LEDs are controlled by the ssh_terminal_TH7.py program, so if they alternately blinking
+this means the logging is continuing.
 A script called 'plot_it.sh' will (using gnuplot) take data from the TH7.log file
 and present it as a graph.
 
