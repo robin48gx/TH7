@@ -20,6 +20,13 @@ that displays the microvolts received from
 the thermocouples and displays them in centigrade (for `k` type).
 It also displays the PCB temperature and  the Vcc (voltage from USB to the pi;
 the value is necessary for accurate calculation of microvolts).
+It also creates a logging file (called 'TH7.log') showing the voltage supplied to the pi, the 
+PCB temperature and the temperature of each connected thermocouple. This logs once per minute.
+If logging is required run with nohup, i.e.
+$ nohup python ssh_terminal_TH7.py > /dev/null &
+The logging will then continue on the pi even if the terminal running it is closed.
+A script called 'plot_it.sh' will (using gnuplot) take data from the TH7.log file
+and present it as a graph.
 
 The python file thermometers_TH7.py adds to this with 
 tkinter drawn thermometers. You may need the tkinter python 
