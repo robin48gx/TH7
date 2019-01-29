@@ -50,7 +50,7 @@ def tcompress ( t ):
    if t < -55:
       t = ((t+55)/5 - 55)
    if t > 120:
-      t = (t/5 + 120)
+      t = (t/5 + 96)
    return t
 
 
