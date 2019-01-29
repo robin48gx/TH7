@@ -23,7 +23,7 @@ the value is necessary for accurate calculation of microvolts).
 It also creates a logging file (called 'TH7.log') showing the voltage supplied to the pi, the 
 PCB temperature and the temperature of each connected thermocouple. This logs once per minute.
 If logging is required run with nohup, i.e.
-$ nohup python ssh_terminal_TH7.py > /dev/null &
+    $ nohup python ssh_terminal_TH7.py > /dev/null &
 The logging will then continue on the pi even if the terminal running it is closed.
 A script called 'plot_it.sh' will (using gnuplot) take data from the TH7.log file
 and present it as a graph.
