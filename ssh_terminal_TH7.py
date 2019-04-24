@@ -48,6 +48,15 @@ def print_list():
     print datetime.datetime.now()
     min = datetime.datetime.now().minute
     #print 'min %d' % ( min )
+
+    piv = 5.0/vadj
+
+    if piv < 4.8 or piv > 5.25:
+         print "Voltage error\nCheck Raspberry Pi power supply."
+         return
+
+
+
     if min != old_min:
       logging.info ( '-------- TH7 ---------------------' + datetime.datetime.now().__str__()  )
 
