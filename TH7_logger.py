@@ -16,6 +16,9 @@ boot_time = datetime.datetime.now()
 can_log = False
 
 
+# change to log at different freq
+DB_LOG_FREQ_SECONDS = 2
+one_second_ago= datetime.datetime.now()
 
 
 c = conn.cursor()
@@ -78,6 +81,7 @@ vref=0.0
 def print_list():
     global old_min
     global logging
+    global one_second_ago
     print datetime.datetime.now()
     min = datetime.datetime.now().minute
     #print 'min %d' % ( min )
@@ -117,7 +121,10 @@ def print_list():
         logging.info ( uvadj )
         old_min = min
     if ( can_log == True ):
-        log_db ( piv, pcb_temp, celsius[1], celsius[2], celsius[3], celsius[4], celsius[5], celsius[6], celsius[7] , "k")
+        if (datetime.datetime.now()  > one_second_ago + timedelta(seconds=DB_LOG_FREQ_SECONDS)):
+            log_db ( piv, pcb_temp, celsius[1], celsius[2], celsius[3], celsius[4], celsius[5], celsius[6], celsius[7] , "k")
+            one_second_ago = datetime.datetime.now()
+
 
 #log_db ( psv, pcbt, ch1, ch2, ch3, ch4, ch5, ch6, ch7 ) :
 
