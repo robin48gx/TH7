@@ -24,7 +24,7 @@ It also creates a logging file (called 'TH7.log') showing the voltage supplied t
 PCB temperature and the temperature of each connected thermocouple. This logs once per minute.
 If logging is required run with nohup, i.e.
 
-    $ nohup python ssh_terminal_TH7.py > /dev/null & 
+    $ nohup python TH7_logger.py > /dev/null & 
     
 The logging will then continue on the pi even if the terminal running it is closed.
 The LEDs are controlled by the ssh_terminal_TH7.py program, so if they are alternately blinking
