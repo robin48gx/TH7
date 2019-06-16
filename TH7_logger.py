@@ -1,12 +1,43 @@
 #!/usr/bin/python
 
+from datetime import datetime, timedelta
+
 import math
+import array as arr
 import os
 import spidev
 import time
 import datetime
 import RPi.GPIO as GPIO
 import logging
+import sqlite3
+conn = sqlite3.connect('TH7.db')
+boot_time = datetime.datetime.now()
+can_log = False
+
+
+
+
+c = conn.cursor()
+# Create table
+c.execute('''CREATE TABLE IF NOT EXISTS th7_logging
+             (date text, pi_supply_voltage real, pcb_temp real, ch1 real, ch2 real, ch3 real, ch4 real, ch5 real, ch6 real, ch7 real, type text)''')
+
+
+
+
+def log_db (  psv, pcbt, ch1, ch2, ch3, ch4, ch5, ch6, ch7, type ) :
+    dt = datetime.datetime.now()
+    thermocouple_type = format
+    # Insert a row of data
+    buf = "INSERT INTO th7_logging VALUES ('%s', '%s',  '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')" % (dt,psv,pcbt,ch1,ch2,ch3,ch4,ch5,ch6,ch7,type)
+    print buf
+    c.execute(buf)
+    # Save (commit) the changes
+    conn.commit()
+
+
+
 
 dt = datetime.datetime.now()
 logging.basicConfig(filename='TH7.log',level=logging.DEBUG)
@@ -22,7 +53,7 @@ old_min = datetime.datetime.now().minute
 # and temperatures for seven `k' type thermocouples
 # on a terminal or ssh terminial.
 #
-
+celsius = arr.array('f', [-300.0,-300.0,-300.0,-300.0,-300.0,-300.0,-300.0,-300.0])
 spi = spidev.SpiDev()  # spi instance to read 12 bit ADC	
 spi_tc77 = spidev.SpiDev() # spi instance to read TC77 digital temperature chip
 spi.open(0, 0)
@@ -66,8 +97,10 @@ def print_list():
         uv = channels[i] + (k_type_translate_c(pcb_temp))
         if uv < -6500:
           st = ('channel: %d\t %.3f uV \t %.3f oC (K-type) ERROR' % (i, uv, k_type_translate_uv(uv))) 
+          celsius[i] = -300.0;
         else:
           st = ('channel: %d\t %.3f uV \t %.3f oC (K-type)' % (i, uv, k_type_translate_uv(uv)))
+          celsius[i] = k_type_translate_uv(uv)
         print st
         if min != old_min:
             logging.info( st )
@@ -83,6 +116,10 @@ def print_list():
         logging.info ( vadj2st )
         logging.info ( uvadj )
         old_min = min
+    if ( can_log == True ):
+        log_db ( piv, pcb_temp, celsius[1], celsius[2], celsius[3], celsius[4], celsius[5], celsius[6], celsius[7] , "k")
+
+#log_db ( psv, pcbt, ch1, ch2, ch3, ch4, ch5, ch6, ch7 ) :
 
 # ITS-90 thermocouple polynomial equations to translate temperature oC to microvolts
 def k_type_translate_c(temp):
@@ -188,6 +225,11 @@ result=0
 
 
 while True:
+  if can_log == False:
+    now = datetime.datetime.now()
+    if ( now > boot_time + timedelta(seconds=5)):
+      can_log = True;
+    
   try:
     a = a + 1
     if a>8:
