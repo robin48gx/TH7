@@ -32,7 +32,8 @@
 
 
 
-\section{TH7 description}
+\section{TH7 Description}
+%
 The TH7 is a Raspberry~Pi hat   that
 provides seven thermocouple inputs(see figure~\ref{fig:th7}).
 %
@@ -42,11 +43,15 @@ simultaneously.
 Its possible uses are 
 logging/monitoring and control of temperature sensitive processes.
 %
-With on board PCB temperature measurement
-it provides full Cold~Junction~Compensation (CJC).
+With on-board PCB temperature measurement, 
+the PCB temperature
+is used to implement
+full Cold~Junction~Compensation (CJC).
+%
 Uncalibrated, the TH7 gives a typical accuracy of $\pm$ ${2}^{\circ} C$.
 %
-It also provides two user programmable LEDS and displays the supply voltage to the pi.
+The TH7 also provides two user programmable LEDS; and 
+makes available the PCB temperature, and the supply voltage to the Raspberry~Pi (USB volatge cab vary between 4.7 to 5.2).
 \clearpage
 The TH7 is a generic thermocouple reader, and therefore should work with any thermocouple type.
 %
@@ -58,13 +63,13 @@ Software support has currently only been written for the `k' type.
 The TH7 offers:
 \begin{itemize}
  \item Full cold junction compensation;
- \item Loss of/disconnection of thermocouple detection;
+ \item Disconnection or open-circuit thermocouple detection;
  \item Seven inputs;
- \item Uses the rasberry pi standard python SPI interface;
- \item Python coding examples \\ https://github.com/robin48gx/TH7;
- \item Two user Programmable LEDs;
+ \item Uses the Rasberry~Pi standard python SPI interface;
+ %\item Python coding examples \\ https://github.com/robin48gx/TH7;
+ \item Two user programmable LEDs;
  \item On chip PCB temperature measurement;
-  \item Can be used as a general micro-volt reader with a $\approx -6000 \mu V \rightarrow 40000 \mu V$ range.
+  \item Can be used as a general micro-volt reader with a range of $\approx -6000 \mu V \rightarrow 40000 \mu V$.
 \end{itemize} 
 
 \section{Instructions}
@@ -106,13 +111,17 @@ Epoxy resin is often useful for gluing thermocouples to devices under long term 
  \label{fig:pi}
 \end{figure}
 \mbox{}
-\vfill
-
+\\
+\\
 \qrcode[height=1in]{http://www.scientificdatasystems.co.uk}
+\\
 \\
 \vspace{0.5cm}
 Contact: info@scientificdatasystems.co.uk
+\\
+\\
 \qrcode[height=1in]{https://www.youtube.com/watch?v=EcGQWLSwX3U}
+\\
 \\
 Youtube tutorial https://www.youtube.com/watch?v=EcGQWLSwX3U
 \vspace{0.5cm}
@@ -124,15 +133,16 @@ Thermocouples are two different types of metal wire welded together
 at one end.
 When there is a heat difference between two ends of the wire
 the two metals produce a small voltage.
-This is typically very small, for `k' type thermocouples for instance
-this is about 40 millionths of a volt per Centigrade change in temperature.
+This is typically very small, for `k' type thermocouples for instance,
+this is about 40 millionths of a Volt per Centigrade change in temperature.
 %
 This voltage is so small that ordinary voltage reading chips, Analogue to Digital Converters (ADC),  cannot easily read them
 to any reasonable accuracy.
 %
 The small signal is usually amplified
 into a range that a computer chip (i.e. ADC) can read.
-The TH7 has an amplifier that takes the small voltage and amplifies it by 100
+%
+The TH7 has an amplifier that takes the small voltage and amplifies it by 100.
 %
 It can then be read into the Raspberry~Pi where it can be converted to
 a temperature reading with adequate accuracy.
@@ -148,7 +158,9 @@ temperature all assume that the instrument end is at zero centigrade.
 
 Because the voltage read at the TH7 input is not at zero centigrade (well not normally!)
 the junction of the wires {\em at the connector block}  makes a thermocouple itself, but in opposition to
-the one at the measurement end. For instance, with a `k' type thermocouple
+the one at the measurement end.
+%
+For instance, with a `k' type thermocouple
 the voltage read at $25^\circ C$ would read around $1000 \mu V$ low!
 
 The TH7 has a temperature measurement chip placed right by the terminal block for the thermocouple inputs.
@@ -157,27 +169,42 @@ and adds it in before calculating the final temperature. This is commonly known 
 
 \subsection{Using the TH7 as a micro-volt reader}
 
-The TH7 can be used as a general micro-volt reader.
+The TH7 can be used as a general purpose micro-volt reader.
 The voltage source must be floating i.e. not grounded.
 A range of $\approx -6mV \rightarrow 40mV$ can be read.
 \clearpage
 \subsection{Availability}
 
 TH7 boards are currently available with a four week lead time.
-
+\\
+\\
+The TH7 is compatible with the Raspberry~Pi models 3 and 4.
+\\
+\\
 TH7 boards may be customised for any thermocouple type.
 An example for `k' type may be found on GITHUB 
+\\
+\\
+\\
 https://github.com/robin48gx/TH7 
-
+\\
+\\
 \qrcode{https://github.com/robin48gx/TH7}
-\vspace{3.5cm}
+%\vspace{3.5cm}
 %\clearpage
-\mbox{}
-\vfill
-\qrcode[height=1in]{http://www.scientificdatasystems.co.uk}
-
-\vspace{0.5cm}
+%\mbox{}
+%\vfill
+%\qrcode[height=1in]{http://www.scientificdatasystems.co.uk}
+%\vspace{0.5cm}
+\\
+\\
+\\
 Contact: info@scientificdatasystems.co.uk
+\\
+\\
+\qrcode[height=1in]{http://www.scientificdatasystems.co.uk}
+\vspace{0.5cm}
+
 
 
 \end{document}
