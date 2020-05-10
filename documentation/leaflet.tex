@@ -50,8 +50,8 @@ full Cold~Junction~Compensation (CJC).
 %
 Uncalibrated, the TH7 gives a typical accuracy of $\pm$ ${2}^{\circ} C$.
 %
-The TH7 also provides two user programmable LEDS; and 
-makes available the PCB temperature, and the supply voltage to the Raspberry~Pi (USB volatge cab vary between 4.7 to 5.2).
+The TH7 also provides two user programmable LEDs; and 
+makes available the PCB temperature, and the supply voltage to the Raspberry~Pi (USB voltage can vary between 4.7 to 5.2).
 \clearpage
 The TH7 is a generic thermocouple reader, and therefore should work with any thermocouple type.
 %
@@ -63,13 +63,14 @@ Software support has currently only been written for the `k' type.
 The TH7 offers:
 \begin{itemize}
  \item Full cold junction compensation;
- \item Disconnection or open-circuit thermocouple detection;
+ \item Thermocouple disconnection or open-circuit  detection;
  \item Seven inputs;
  \item Uses the Rasberry~Pi standard python SPI interface;
  %\item Python coding examples \\ https://github.com/robin48gx/TH7;
  \item Two user programmable LEDs;
  \item On chip PCB temperature measurement;
-  \item Can be used as a general micro-volt reader with a range of $\approx -6000 \mu V \rightarrow 40000 \mu V$.
+  \item Can be used as a general-purpose micro-volt 
+  reader with a range of $\approx -6000 \mu V \rightarrow 40000 \mu V$.
 \end{itemize} 
 
 \section{Instructions}
@@ -88,7 +89,7 @@ Epoxy resin is often useful for gluing thermocouples to devices under long term 
  \centering
  \includegraphics[width=200pt]{./wiring.jpg}
  % wiring.JPG: 0x0 pixel, 300dpi, 0.00x0.00 cm, bb=
- \caption{image shows wiring for European standard `k' type thermocouples wiring (green is plus and the white is minus; other countries may use different colour schemes). 
+ \caption{Image shows wiring for European standard `k' type thermocouples wiring (green is plus and the white is minus; other countries may use different colour schemes.)
 %
  If the thermocouple is inserted with incorrect polarity it will read incorrectly and temperature will be seen to go down when heat is applied.}
  \label{fig:con}
@@ -98,7 +99,7 @@ Epoxy resin is often useful for gluing thermocouples to devices under long term 
  \centering
  \includegraphics[width=156pt]{./TH7_0p3.jpg}
  % TH7_0p3.jpg: 0x0 pixel, 300dpi, 0.00x0.00 cm, bb=
- \caption{TH7 thermocouple interface PCB/pi~Hat}
+ \caption{TH7 thermocouple Interface PCB/Raspberry~Pi~Hat}
  \label{fig:th7_2}
 \end{figure}
 
@@ -123,16 +124,20 @@ Contact: info@scientificdatasystems.co.uk
 \qrcode[height=1in]{https://www.youtube.com/watch?v=EcGQWLSwX3U}
 \\
 \\
-Youtube tutorial https://www.youtube.com/watch?v=EcGQWLSwX3U
+Youtube tutorial:
+\\
+https://www.youtube.com/watch?v=EcGQWLSwX3U
 \vspace{0.5cm}
 \clearpage
 
-\section{What Thermocouples are}
+\section{What thermocouples are}
 
 Thermocouples are two different types of metal wire welded together
 at one end.
-When there is a heat difference between two ends of the wire
+%
+When there is a heat difference between two ends of the wire,
 the two metals produce a small voltage.
+%
 This is typically very small, for `k' type thermocouples for instance,
 this is about 40 millionths of a Volt per Centigrade change in temperature.
 %
