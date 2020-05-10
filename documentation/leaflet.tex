@@ -19,7 +19,7 @@
 \pagenumbering{gobble}
 \maketitle
 % \begin{abstract}
-% This leaflet describes the TH7 generic thermocouple reader pi-hat/PCB for the raspberry pi.
+% This leaflet describes the TH7 generic thermocouple reader pi-hat/PCB for the Raspberry~Pi.
 % \end{abstract}
 
 \begin{figure}
@@ -33,19 +33,25 @@
 
 
 \section{TH7 description}
-The TH7 is a raspbery pi hat   that
-provides seven thermocouple inputs(see figure~\ref{fig:th7}). This mean seven different temperatures can be read
-simultaneously. Its possible uses are 
+The TH7 is a Raspberry~Pi hat   that
+provides seven thermocouple inputs(see figure~\ref{fig:th7}).
+%
+This means seven different temperatures can be read
+simultaneously. 
+%
+Its possible uses are 
 logging/monitoring and control of temperature sensitive processes.
 %
 With on board PCB temperature measurement
 it provides full Cold~Junction~Compensation (CJC).
-Uncalibrated the TH7 gives a typical accuracy of $\pm$ ${2}^{\circ} C$.
+Uncalibrated, the TH7 gives a typical accuracy of $\pm$ ${2}^{\circ} C$.
+%
 It also provides two user programmable LEDS and displays the supply voltage to the pi.
 \clearpage
-The TH7 is a generic thermocouple reader, and therefore should work with any thermocouple.
-Software defines its micro-volt to temperature and cold~junction~compensation characteristics.
-Software support has been written for the `k' type only currently.
+The TH7 is a generic thermocouple reader, and therefore should work with any thermocouple type.
+%
+Software defines its micro-volt to temperature and CJC characteristics.
+Software support has currently only been written for the `k' type.
 
 %\clearpage
 \subsection{Characteristics}
@@ -63,18 +69,23 @@ The TH7 offers:
 
 \section{Instructions}
 \subsection{Connection to terminal block}
+%
 Connect the thermocouples using the hital~tech connectors and ensure the wires make contact with the 
 connector metal clamps (see figure~\ref{fig:con}).
+%
 \subsection{Conection to the device being measured}
+%
 Always apply insulation to the thermocouples (i.e. do not ground them).
-Epoxy resin is often useful for gluing thermcouples to devices under long term temperature test.
+%
+Epoxy resin is often useful for gluing thermocouples to devices under long term temperature tests.
 
 \begin{figure}[h]
  \centering
  \includegraphics[width=200pt]{./wiring.jpg}
  % wiring.JPG: 0x0 pixel, 300dpi, 0.00x0.00 cm, bb=
- \caption{image shows wiring for European standard `k' type thermocouples Wiring (green is plus and the green and white is minus; other countries may use different colour schemes). 
- If the thermoucouple is inserted with incorrect polarity it will read incorrectly and temperature from it will be seen to go down when heat is applied to it.}
+ \caption{image shows wiring for European standard `k' type thermocouples wiring (green is plus and the white is minus; other countries may use different colour schemes). 
+%
+ If the thermocouple is inserted with incorrect polarity it will read incorrectly and temperature will be seen to go down when heat is applied.}
  \label{fig:con}
 \end{figure}
 
@@ -98,10 +109,13 @@ Epoxy resin is often useful for gluing thermcouples to devices under long term t
 \vfill
 
 \qrcode[height=1in]{http://www.scientificdatasystems.co.uk}
-
+\\
 \vspace{0.5cm}
 Contact: info@scientificdatasystems.co.uk
-
+\qrcode[height=1in]{https://www.youtube.com/watch?v=EcGQWLSwX3U}
+\\
+Youtube tutorial https://www.youtube.com/watch?v=EcGQWLSwX3U
+\vspace{0.5cm}
 \clearpage
 
 \section{What Thermocouples are}
@@ -117,10 +131,12 @@ This voltage is so small that ordinary voltage reading chips, Analogue to Digita
 to any reasonable accuracy.
 %
 The small signal is usually amplified
-to take it into the range that a computer chip can read it.
-The TH7 has an amplifier that takes the small voltage and amplifies it by 100.
-It can than be read into the raspberry pi where it can be converted into
+into a range that a computer chip (i.e. ADC) can read.
+The TH7 has an amplifier that takes the small voltage and amplifies it by 100
+%
+It can then be read into the Raspberry~Pi where it can be converted to
 a temperature reading with adequate accuracy.
+%
 Wikipedia has a good entry on thermocouples.
 https://en.wikipedia.org/wiki/Thermocouple.
 %as a qrcode, \qrcode[height=1in]{https://en.wikipedia.org/wiki/Thermocouple}
@@ -131,9 +147,9 @@ The tables and equations to convert thermocouple voltage to
 temperature all assume that the instrument end is at zero centigrade.
 
 Because the voltage read at the TH7 input is not at zero centigrade (well not normally!)
-the junction of the wires {\em at the connector block}  makes a thermocouple its-self, but in opposition to
+the junction of the wires {\em at the connector block}  makes a thermocouple itself, but in opposition to
 the one at the measurement end. For instance, with a `k' type thermocouple
-the volatge read at $25^\circ C$ would read around $1000 \mu V$ low!
+the voltage read at $25^\circ C$ would read around $1000 \mu V$ low!
 
 The TH7 has a temperature measurement chip placed right by the terminal block for the thermocouple inputs.
 By knowing this temperature, the TH7 works out what the missing voltage is
