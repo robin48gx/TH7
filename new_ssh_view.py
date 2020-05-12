@@ -8,7 +8,7 @@ import datetime
 import RPi.GPIO as GPIO
 from thermocouples import * # bad practice but everything is properly namespaced.....
 
-class thermocouple_channel:
+class Thermocouple_Channel:
 
     def __init__(self, channel, filter_level=0, thermocouple_type='uv', offset=0.0):
 
@@ -25,16 +25,16 @@ class thermocouple_channel:
 
 
 
-thermocouples = [0,0,0,0,0,0,0]
+thermocouples = []
 
 # initialise array/list with 7 "blanks"
 for i in range(0, 7):
-    thermocouples.append(thermocouple_channel(i+1)
+    thermocouples.append(Thermocouple_Channel(i+1)
 
 # channel 1...
-thermocouples[0] = thermocouple_channel(1, 1, 'K')
+thermocouples[0] = Thermocouple_Channel(1, 1, 'K')
 # channel 2...
-thermocouples[1] = thermocouple_channel(2, 0, 'N', -25.0)
+thermocouples[1] = Thermocouple_Channel(2, 0, 'N', -25.0)
 
 
 # main "printing loop."
@@ -49,8 +49,8 @@ def print_list():
          print "Voltage error\nCheck Raspberry Pi power supply."
          return
 
-    for i in thermocouple_channels:
-        tci = thermocouple_channels[i]
+    for i in thermocouples:
+        tci = thermocouples[i]
         print ("Channel %d; %.1f uV; temp=%.2f oC; Type=%s; [F=%d]" % \
             (tci.channel, tci.value_uv, tci.temperature, tci.thermocouple_type, tci.filter_level))
           
@@ -124,9 +124,9 @@ while True:
 
         # now first order filter the micro-volts to reduce random noise
         if first_run == 1:
-            thermocouple_channels[a-1].value_uv = uv
+            thermocouples[a-1].value_uv = uv
         else:
-            thermocouple_channels[a-1].value_uv = apply_lag_filter(thermocouple_channels[a-1].value_uv, uv, thermocouple_channels[a-1].filter_level) 
+            thermocouples[a-1].value_uv = apply_lag_filter(thermocouples[a-1].value_uv, uv, thermocouples[a-1].filter_level) 
 
 
     if a == 8: # read the temperature from the tc77
@@ -154,7 +154,7 @@ def apply_lag_filter(old_value, new_value, lag_level):
     if lag_level == 2:
         return ( 0.95 * old_value + 0.05 * new_value )
 
-    # this will climb VERY slowly but probably be VERY stable...
+    # this will change VERY slowly but probably be VERY stable...
     if lag_level == 3:
         return ( 0.995 * old_value + 0.005 * new_value )
 
