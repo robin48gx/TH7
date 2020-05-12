@@ -32,15 +32,16 @@ for i in range(0, 7):
 # Here, define each thermocouple channel connected to the TH7/ in use.
 # 1st paramater is the No. of the channel; on PCB,
 # 2nd is the filtering level, [0..3] (higher is harder filtering)
-# 3rd is the T/C type as 1 upper-case character; currently supporting K, T, J, N
+# 3rd is the T/C type as 1 upper-case character;
+# currently supporting types: K, T, J, N, E
 
 
-# channel, filter level, type, offset
+# channel, filter level, type, offset (offset is coming soon..)
 
 # channel 1...
 thermocouples[0] = Thermocouple_Channel(1, 1, "T")
 # channel 2...
-thermocouples[1] = Thermocouple_Channel(2, 2, "K")
+thermocouples[1] = Thermocouple_Channel(2, 1, "E")
 
 #
 # ADD NEW ONES HERE
@@ -76,6 +77,8 @@ def translate_uv_to_celsius(uv, tc_type="K"):
         return N_TYPE_TRANSLATE_UV_TO_C(uv)
     if tc_type == "T":
         return T_TYPE_TRANSLATE_UV_TO_C(uv)
+    if tc_type == "E":
+        return E_TYPE_TRANSLATE_UV_TO_C(uv)
 
     if tc_type == "uv":
         return -300.0
@@ -92,6 +95,8 @@ def translate_celsius_to_uv(c, tc_type="K"):
         return N_TYPE_TRANSLATE_C_TO_UV(c)
     if tc_type == "T":
         return T_TYPE_TRANSLATE_C_TO_UV(c)
+    if tc_type == "E":
+        return E_TYPE_TRANSLATE_C_TO_UV(c)
     
     
     if tc_type == "uv":

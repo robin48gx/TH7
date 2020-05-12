@@ -34,6 +34,13 @@ T_TYPE_MIN_UV = -5603.0
 T_TYPE_MAX_UV = 20872.0
 
 
+E_TYPE_MIN_C = -200.0 #no polynomials for range: -270 to -200
+E_TYPE_MAX_C = 1000.0
+
+E_TYPE_MIN_UV = -8825.0
+E_TYPE_MAX_UV = 76373.0
+
+
 # converts supplied temperature,  C to uV based on J-type polynomials
 def J_TYPE_TRANSLATE_C_TO_UV(c):
 
@@ -433,3 +440,93 @@ def T_TYPE_TRANSLATE_UV_TO_C(uv):
 
 
 
+def E_TYPE_TRANSLATE_C_TO_UV(c):
+
+    c = c + 0.0
+
+    if uv < E_TYPE_MIN_UV or uv > E_TYPE_MAX_UV:
+        return 0.0
+
+    c0 = c1 = c2 = c3 = c4 = c5 = c6 = c7 = c8 = c9 = c10 = c11 = c12 = c13 = 0.0
+
+    if -270.0 < c 0.0:
+
+        c0 = 0.0
+        c1 = 5.8665508708e1
+        c2 = 4.5410977124e-2
+        c3 = -7.7998048686e-4
+        c4 = -2.5800160843e-5
+        c5 = -5.9452583057e-7
+        c6 = -9.3214058667e-9
+        c7 = -1.0287605534e-10
+        c8 = -8.0370123621e-13
+        c9 = -4.3979497391e-15
+        c10 = -1.6414776355e-17
+        c11 = -3.9673619516e-20
+        c12 = -5.5827328721e-23
+        c13 = -3.4657842013e-26
+
+    elif 0.0 < c < 1000.0:
+
+        c0 = 0.0
+        c1 = 5.8665508710e1
+        c2 = 4.5032275582e-2
+        c3 = 2.8908407212e-5
+        c4 = -3.3056896652e-7
+        c5 = 6.5024403270e-10
+        c6 = -1.9197495504e-13
+        c7 = -1.2536600497e-15
+        c8 = 2.1489217569e-18
+        c9 = -1.4388041782e-21
+        c10 = 3.5960899481e-25
+        c11 = 0.0
+        c12 = 0.0
+        c13 = 0.0
+
+    else:
+        return 0.0
+
+    E = c0 + c * (c1 + c * (c2 + c * (c3 + c * (c4 + c * (c5 + c * (c6 + c * (c7 + c * (c8 + c * (c9 + c * (c10 + c * (c11 + c * (c12 + c * (c13)))))))))))))
+    return E
+
+
+def E_TYPE_TRANSLATE_UV_TO_C(uv):
+
+    uv = uv + 0.0
+
+    if uv < E_TYPE_MIN_UV or uv > E_TYPE_MAX_UV:
+        return 0.0
+
+    c1 = c2 = c3 = c4 = c5 = c6 = c7 = c8 = c9 = 0.0
+
+    if -8825.0 < uv < 0.0:
+
+        c0 = 0.0
+        c1 = 1.6977288e-2
+        c2 = -4.3514970e-7
+        c3 = -1.5859697e-10
+        c4 = -9.2502871e-14
+        c5 = -2.6084314e-17
+        c6 = -4.1360199e-21
+        c7 = -3.4034030e-25
+        c8 = -1.1564890e-29
+        c9 = 0.0
+
+    elif 0.0 < c < 76373.0:
+
+        c0 = 0.0
+        c1 = 1.7057035e-2
+        c2 = -2.3301759e-7
+        c3 = 6.5435585e-12
+        c4 = -7.3562749e-17
+        c5 = -1.7896001e-21
+        c6 = 8.4036165e-26
+        c7 = -1.3735879e-30
+        c8 = 1.0629823e-35
+        c9 = -3.2447087e-41
+
+    else:
+        return 0.0
+
+    T = c0 + uv * (c1 + uv * (c2 + uv * (c3 + uv * (c4 + uv * (c5 + uv * (c6 + uv * (c7 + uv * (c8 + uv * (c9)))))))))
+    return T
