@@ -50,10 +50,9 @@ def print_list():
          print "Voltage error\nCheck Raspberry Pi power supply."
          return
 
-    for i in thermocouples:
-        tci = thermocouples[ (i//1) ] 
+    for i in range(0, len(thermocouples)): 
         print ("Channel %d; %.1f uV; temp=%.2f oC; Type=%s; [F=%d]" % \
-            (tci.channel, tci.value_uv, tci.temperature, tci.thermocouple_type, tci.filter_level))
+            (thermocouples[i].channel, thermocouples[i].value_uv, thermocouples[i].temperature, thermocouples[i].thermocouple_type, thermocouples[i].filter_level))
           
     vadjst = "vadj:    \t%2f" % vadj
     vadj2st =  "vadj_now: %2f  Pi Vdd %f" % (vadj_now, 5.0/vadj)
