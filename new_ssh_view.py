@@ -6,6 +6,7 @@ import spidev
 import time
 import datetime
 import RPi.GPIO as GPIO
+import numpy as np
 from thermocouples import * # bad practice but everything is properly namespaced.....
 
 class Thermocouple_Channel:
@@ -25,16 +26,16 @@ class Thermocouple_Channel:
 
 
 
-thermocouples = []
+thermocouples = np.array([0, 0, 0, 0, 0, 0, 0], dtype=object)
 
 # initialise array/list with 7 "blanks"
 for i in range(0, 7):
-    thermocouples.append(Thermocouple_Channel(i+1)
+    thermocouples[i] = Thermocouple_Channel(i+1)
 
 # channel 1...
-thermocouples.insert(0, Thermocouple_Channel(1, 1, 'K'))
+thermocouples[0] = Thermocouple_Channel(1, 1, 'K'))
 # channel 2...
-thermocouples.insert(1, Thermocouple_Channel(2, 0, 'N', -25.0))
+thermocouples[0] = Thermocouple_Channel(2, 0, 'N', -25.0))
 
 
 # main "printing loop."
