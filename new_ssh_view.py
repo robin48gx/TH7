@@ -16,7 +16,7 @@ class Thermocouple_Channel:
         self.channel = channel
         self.filter_level = filter_level
         self.thermocouple_type = thermocouple_type
-        self.offset = offset # in C
+        self.offset = offset # in C COMING SOON!!
         self.value_uv = 0.0
 
 
@@ -29,8 +29,14 @@ for i in range(0, 7):
 
 
 
+# Here, define each thermocouple channel connected to the TH7/ in use.
+# 1st paramater is the No. of the channel; on PCB,
+# 2nd is the filtering level, [0..3] (higher is harder filtering)
+# 3rd is the T/C type as 1 upper-case character; currently supporting K, T, J, N
+
 
 # channel, filter level, type, offset
+
 # channel 1...
 thermocouples[0] = Thermocouple_Channel(1, 1, "T")
 # channel 2...
