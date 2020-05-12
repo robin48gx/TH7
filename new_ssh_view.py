@@ -51,7 +51,7 @@ def print_list():
          return
 
     for i in thermocouples:
-        tci = thermocouples[i]
+        tci = thermocouples[ (i//1) ] 
         print ("Channel %d; %.1f uV; temp=%.2f oC; Type=%s; [F=%d]" % \
             (tci.channel, tci.value_uv, tci.temperature, tci.thermocouple_type, tci.filter_level))
           
