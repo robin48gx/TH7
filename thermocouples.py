@@ -444,12 +444,12 @@ def E_TYPE_TRANSLATE_C_TO_UV(c):
 
     c = c + 0.0
 
-    if uv < E_TYPE_MIN_UV or uv > E_TYPE_MAX_UV:
+    if c < E_TYPE_MIN_C or c > E_TYPE_MAX_C:
         return 0.0
 
     c0 = c1 = c2 = c3 = c4 = c5 = c6 = c7 = c8 = c9 = c10 = c11 = c12 = c13 = 0.0
 
-    if -270.0 < c 0.0:
+    if -270.0 < c < 0.0:
 
         c0 = 0.0
         c1 = 5.8665508708e1
@@ -512,7 +512,7 @@ def E_TYPE_TRANSLATE_UV_TO_C(uv):
         c8 = -1.1564890e-29
         c9 = 0.0
 
-    elif 0.0 < c < 76373.0:
+    elif 0.0 < uv < 76373.0:
 
         c0 = 0.0
         c1 = 1.7057035e-2
