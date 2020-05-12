@@ -33,9 +33,9 @@ for i in range(0, 7):
     thermocouples[i] = Thermocouple_Channel(i+1)
 
 # channel 1...
-thermocouples[0] = Thermocouple_Channel(1, 1, 'K'))
+thermocouples[0] = Thermocouple_Channel(1, 1, 'K')
 # channel 2...
-thermocouples[0] = Thermocouple_Channel(2, 0, 'N', -25.0))
+thermocouples[0] = Thermocouple_Channel(2, 0, 'N', -25.0)
 
 
 # main "printing loop."
