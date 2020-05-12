@@ -39,10 +39,13 @@ for i in range(0, 7):
 # channel, filter level, type, offset (offset is coming soon..)
 
 # channel 1...
-thermocouples[0] = Thermocouple_Channel(1, 1, "E")
+thermocouples[0] = Thermocouple_Channel(1, 3, "K")
 # channel 2...
-thermocouples[1] = Thermocouple_Channel(2, 1, "J")
+thermocouples[1] = Thermocouple_Channel(2, 3, "K")
 
+thermocouples[2] = Thermocouple_Channel(3, 3, "K")
+thermocouples[3] = Thermocouple_Channel(4, 3, "K")
+thermocouples[4] = Thermocouple_Channel(5, 3, "K")
 #
 # ADD NEW ONES HERE
 #
@@ -206,7 +209,11 @@ while True:
 
         # now first order filter the micro-volts to reduce random noise
         if first_run == 1:
-            thermocouples[a-1].value_uv = uv
+            #thermocouples[a-1].value_uv = uv
+            # starts out every channel with the uv as if it was at 1 oC
+            thermocouples[a-1].value_uv = translate_celsius_to_uv((0.0 - pcb_temp), thermocouples[a-1].thermocouple_type)
+            # TODO: add a starter field able to be configured by user
+            # default value = 0 oC, or disabled to run up from a GND down-pull
         else:
             thermocouples[a-1].value_uv = apply_lag_filter(thermocouples[a-1].value_uv, uv, thermocouples[a-1].filter_level) 
 
