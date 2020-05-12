@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import math
+from math import exp
 import os
 import spidev
 import time
@@ -35,7 +35,7 @@ for i in range(0, 7):
 # channel 1...
 thermocouples[0] = Thermocouple_Channel(1, 1, 'K')
 # channel 2...
-thermocouples[0] = Thermocouple_Channel(2, 0, 'N', -25.0)
+thermocouples[1] = Thermocouple_Channel(2, 0, 'N', -25.0)
 
 
 
