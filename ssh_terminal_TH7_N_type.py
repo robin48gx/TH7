@@ -7,6 +7,8 @@ import time
 import datetime
 import RPi.GPIO as GPIO
 import logging
+
+# TODO: all of them
 from n_type import n_uv_to_c, n_c_to_uv
 from j_type import j_uv_to_c, j_c_to_uv
 
@@ -17,12 +19,6 @@ logging.warning('TH7 LOG FILE STARTED ' + dt.__str__())
 
 
 old_min = datetime.datetime.now().minute
-#
-# TH7 thermocouple reader for the raspberry pi
-#
-# This program displays corrected micro-volts
-# and temperatures for seven `k' type thermocouples
-# on a terminal or ssh terminial.
 #
 
 spi = spidev.SpiDev()  # spi instance to read 12 bit ADC	

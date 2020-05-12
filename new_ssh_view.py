@@ -25,7 +25,7 @@ class thermocouple_channel:
 
 
 
-thermocouples = []
+thermocouples = [0,0,0,0,0,0,0]
 
 # initialise array/list with 7 "blanks"
 for i in range(0, 7):
