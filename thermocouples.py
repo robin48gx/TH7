@@ -1,3 +1,5 @@
+from math import exp
+
 #
 #
 # based in its entirety on the NIST T-90 thermocouple polynomial tables
