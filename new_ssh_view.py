@@ -27,12 +27,18 @@ thermocouples = np.array([0, 0, 0, 0, 0, 0, 0], dtype=object)
 for i in range(0, 7):
     thermocouples[i] = Thermocouple_Channel(i+1)
 
+
+
+
 # channel, filter level, type, offset
 # channel 1...
-thermocouples[0] = Thermocouple_Channel(1, 2, "K")
+thermocouples[0] = Thermocouple_Channel(1, 1, "T")
 # channel 2...
-thermocouples[1] = Thermocouple_Channel(2, 2, "J")
+thermocouples[1] = Thermocouple_Channel(2, 2, "K")
 
+#
+# ADD NEW ONES HERE
+#
 
 
 
@@ -62,10 +68,11 @@ def translate_uv_to_celsius(uv, tc_type="K"):
         return J_TYPE_TRANSLATE_UV_TO_C(uv)
     if tc_type == "N":
         return N_TYPE_TRANSLATE_UV_TO_C(uv)
-
+    if tc_type == "T":
+        return T_TYPE_TRANSLATE_UV_TO_C(uv)
 
     if tc_type == "uv":
-        return "-300.0"
+        return -300.0
 # 
 def translate_celsius_to_uv(c, tc_type="K"):
 
@@ -77,8 +84,12 @@ def translate_celsius_to_uv(c, tc_type="K"):
         return J_TYPE_TRANSLATE_C_TO_UV(c)
     if tc_type == "N":
         return N_TYPE_TRANSLATE_C_TO_UV(c)
-
-
+    if tc_type == "T":
+        return T_TYPE_TRANSLATE_C_TO_UV(c)
+    
+    
+    if tc_type == "uv":
+        return -300.0
 
 
 
@@ -102,11 +113,11 @@ def print_list():
         channel = thermocouples[i].channel
         uv      = thermocouples[i].value_uv
 
-        uv = uv + translate_celsius_to_uv(pcb_temp)
+        uv = uv + translate_celsius_to_uv(pcb_temp, tc_type)
         
         # lowest is J type at -8095 uv
         if uv > -8100:
-            print (("Channel %d: {:15.3f} uV, temp={:10.3f} oC, type=%-5s [F=%d]".format(uv, translate_uv_to_celsius(uv, tc_type)) % (channel, tc_type, f_level)))
+            print (("Channel %d: {:15.2f} uV, temp={:10.1f} oC, type=%-5s [F=%d]".format(uv, translate_uv_to_celsius(uv, tc_type)) % (channel, tc_type, f_level)))
         else:
             print ("Channel %d: DISCONNECT OR OPEN CIRCUIT" % channel)
 
