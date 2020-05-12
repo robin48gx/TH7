@@ -26,6 +26,14 @@ K_TYPE_MAX_C = 1372.0
 K_TYPE_MIN_UV = -5891.0
 K_TYPE_MAX_UV = 54886.0
 
+
+T_TYPE_MIN_C = -270.0
+T_TYPE_MAX_C = 400.0
+
+T_TYPE_MIN_UV = -5603.0
+T_TYPE_MAX_UV = 20872.0
+
+
 # converts supplied temperature,  C to uV based on J-type polynomials
 def J_TYPE_TRANSLATE_C_TO_UV(c):
 
@@ -226,7 +234,7 @@ def N_TYPE_TRANSLATE_UV_TO_C(uv):
     return T
 
 
-# multiplied by 10?
+
 def K_TYPE_TRANSLATE_C_TO_UV(c):
 
     c = c + 0.0
@@ -330,5 +338,98 @@ def K_TYPE_TRANSLATE_UV_TO_C(uv):
 
     T = c0 + uv * (c1 + uv * (c2 + uv * (c3 + uv * (c4 + uv * (c5 + uv * (c6 + uv * (c7 + uv * (c8 + uv * (c9)))))))))
     return T
+
+
+def T_TYPE_TRANSLATE_C_TO_UV(c):
+
+    c = c + 0.0
+
+    if c < T_TYPE_MIN_C or c > T_TYPE_MAX_C:
+        return 0.0
+
+    c0 = c1 = c2 = c3 = c4 = c5 = c6 = c7 = c8 = c9 = c10 = c11 = c12 = c13 = c14 = 0.0
+
+    if -270.0 < c < 0.0:
+
+        c0 = 0.0
+        c1 = 3.8748106364e1
+        c2 = 4.4194434347e-2
+        c3 = 1.1844323105e-4
+        c4 = 2.0032973554e-5
+        c5 = 9.0138019559e-7
+        c6 = 2.2651156593e-8
+        c7 = 3.6071154205e-10
+        c8 = 3.8493939883e-12
+        c9 = 2.8213521925e-14
+        c10 = 1.4251594779e-16
+        c11 = 4.8768662286e-19
+        c12 = 1.0795539270e-21
+        c13 = 1.3945027062e-24
+        c14 = 7.9795153927e-28
+    
+    elif 0.0 < c < 400.0:
+
+        c0 = 0.0
+        c1 = 3.8748106364e1
+        c2 = 3.3292227880e-2
+        c3 = 2.0618243404e-4
+        c4 = -2.1882256846e-6
+        c5 = 1.0996880928e-8
+        c6 = -3.0815758772e-11
+        c7 = 4.5479135290e-14
+        c8 = -2.7512901673e-17
+        c9 = 0.0
+        c10 = 0.0
+        c11 = 0.0
+        c12 = 0.0
+        c13 = 0.0
+        c14 = 0.0
+
+    else:
+        return 0.0
+
+    E = c0 + c * (c1 + c * (c2 + c * (c3 + c * (c4 + c * (c5 + c * (c6 + c * (c7 + c * (c8 + c * (c9 + c * (c10 + c * (c11 + c * (c12 + c * (c13 + c * (c14))))))))))))))
+    return E
+
+
+
+
+def T_TYPE_TRANSLATE_UV_TO_C(uv):
+
+    uv = uv + 0.0
+
+    if uv < T_TYPE_MIN_UV or uv > T_TYPE_MAX_UV:
+        return 0.0
+
+    c1 = c2 = c3 = c4 = c5 = c6 = c7 = 0.0
+
+    if -5603.0 < uv < 0.0:
+
+        c0 = 0.0
+        c1 = 2.5949192e-2
+        c2 = -2.1316967e-7
+        c3 = 7.9018692e-10
+        c4 = 4.2527777e-13
+        c5 = 1.3304473e-16
+        c6 = 2.20241446e-20
+        c7 = 1.2668171e-24
+
+    elif 0.0 < uv < 20872.0:
+
+        c0 = 0.0
+        c1 = 2.592800e-2
+        c2 = -7.602961e-7
+        c3 = 4.637791e-11
+        c4 = -2.165394e-15
+        c5 = 6.048144e-20
+        c6 = -7.293422e-25
+        c7 = 0.0
+
+    else:
+        return 0.0
+
+    T = c0 + uv * (c1 + uv * (c2 + uv * (c3 + uv * (c4 + uv * (c5 + uv * (c6 + uv * (c7)))))))
+    return T
+
 
 
