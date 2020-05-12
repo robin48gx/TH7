@@ -270,7 +270,7 @@ def K_TYPE_TRANSLATE_C_TO_UV(c):
         t -= 126.9686
         t = t * t
         t = t * a1
-        et = math.exp(t) * a0
+        et = exp(t) * a0
     else:
         return 0.0
     t = c

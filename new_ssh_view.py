@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from math import exp
+import math
 import os
 import spidev
 import time
@@ -11,31 +11,27 @@ from thermocouples import * # bad practice but everything is properly namespaced
 
 class Thermocouple_Channel:
 
-    def __init__(self, channel, filter_level=0, thermocouple_type='uv', offset=0.0):
+    def __init__(self, channel, filter_level=0, thermocouple_type="uv", offset=0.0):
 
         self.channel = channel
         self.filter_level = filter_level
         self.thermocouple_type = thermocouple_type
         self.offset = offset # in C
         self.value_uv = 0.0
-        self.temperature = 0.0
-    
 
 
-# conversion variables
-
-
-
+# references/pointers to thermocouple_channel objects are stored here
 thermocouples = np.array([0, 0, 0, 0, 0, 0, 0], dtype=object)
 
 # initialise array/list with 7 "blanks"
 for i in range(0, 7):
     thermocouples[i] = Thermocouple_Channel(i+1)
 
+# channel, filter level, type, offset
 # channel 1...
-thermocouples[0] = Thermocouple_Channel(1, 1, 'K')
+thermocouples[0] = Thermocouple_Channel(1, 2, "K")
 # channel 2...
-thermocouples[1] = Thermocouple_Channel(2, 0, 'N', -25.0)
+thermocouples[1] = Thermocouple_Channel(2, 2, "J")
 
 
 
@@ -56,26 +52,30 @@ def apply_lag_filter(old_value, new_value, lag_level):
         return ( 0.995 * old_value + 0.005 * new_value )
 
 #
-def translate_uv_to_celsius(uv, tc_type='K'):
+def translate_uv_to_celsius(uv, tc_type="K"):
     
     uv = uv + 0.0
 
-    if tc_type == 'K':
+    if tc_type == "K":
         return K_TYPE_TRANSLATE_UV_TO_C(uv)
-    if tc_type == 'J':
+    if tc_type == "J":
         return J_TYPE_TRANSLATE_UV_TO_C(uv)
-    if tc_type == 'N':
+    if tc_type == "N":
         return N_TYPE_TRANSLATE_UV_TO_C(uv)
+
+
+    if tc_type == "uv":
+        return "-300.0"
 # 
-def translate_celsius_to_uv(c, tc_type='K'):
+def translate_celsius_to_uv(c, tc_type="K"):
 
     c = c + 0.0
 
-    if tc_type == 'K':
+    if tc_type == "K":
         return K_TYPE_TRANSLATE_C_TO_UV(c)
-    if tc_type == 'J':
+    if tc_type == "J":
         return J_TYPE_TRANSLATE_C_TO_UV(c)
-    if tc_type == 'N':
+    if tc_type == "N":
         return N_TYPE_TRANSLATE_C_TO_UV(c)
 
 
@@ -95,11 +95,22 @@ def print_list():
          print "Voltage error\nCheck Raspberry Pi power supply."
          return
 
-    for i in range(0, len(thermocouples)): 
-        print ("Channel %d; %.1f uV; temp=%.2f oC; Type=%s; [F=%d]" % \
-            (thermocouples[i].channel, thermocouples[i].value_uv, thermocouples[i].temperature, thermocouples[i].thermocouple_type, thermocouples[i].filter_level))
-          
-    vadjst = "vadj:    \t%2f" % vadj
+    for i in range(0, len(thermocouples)):
+
+        tc_type = thermocouples[i].thermocouple_type
+        f_level = thermocouples[i].filter_level
+        channel = thermocouples[i].channel
+        uv      = thermocouples[i].value_uv
+
+        uv = uv + translate_celsius_to_uv(pcb_temp)
+        
+        # lowest is J type at -8095 uv
+        if uv > -8100:
+            print (("Channel %d: {:15.3f} uV, temp={:10.3f} oC, type=%-5s [F=%d]".format(uv, translate_uv_to_celsius(uv, tc_type)) % (channel, tc_type, f_level)))
+        else:
+            print ("Channel %d: DISCONNECT OR OPEN CIRCUIT" % channel)
+
+    vadjst = ("vadj:    \t%2f" % (vadj))
     vadj2st =  "vadj_now: %2f  Pi Vdd %f" % (vadj_now, 5.0/vadj)
     #print "PCB_TEMP: %2f" % pcb_temp
     uvadj =  "PCB_TEMP %2foC uV:\t%2f\t(%2f C)" % (pcb_temp, translate_celsius_to_uv(pcb_temp), translate_uv_to_celsius(translate_celsius_to_uv(pcb_temp)))
@@ -123,7 +134,7 @@ pcb_temp = 25.0
 vadj =1.0
 vadj_now=1.0
 vref=0.0
-
+ch1 = 0.0
 a = 0
 result=0
 
@@ -157,7 +168,7 @@ while True:
     if a >= 1 and a < 8:
 
         # this variable is not referenced anywhere else?
-        #ch1_adc12_5v = ((resp[1] * 256.0 + resp[2]*1.0) - vref) * vadj
+        ch1_adc12_5v = ((resp[1] * 256.0 + resp[2]*1.0) - vref) * vadj
         
         ch1 = resp[1] * 256.0 + resp[2]*1.0
         perfect = ((vref - ch1) * vadj)
