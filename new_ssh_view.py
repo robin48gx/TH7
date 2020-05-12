@@ -38,6 +38,51 @@ thermocouples[0] = Thermocouple_Channel(1, 1, 'K')
 thermocouples[0] = Thermocouple_Channel(2, 0, 'N', -25.0)
 
 
+
+
+# first order filters of varying "hardness."
+def apply_lag_filter(old_value, new_value, lag_level):
+    if lag_level == 0:
+        return new_value
+
+    if lag_level == 1:
+        return ( 0.9 * old_value + 0.1 * new_value )
+
+    if lag_level == 2:
+        return ( 0.95 * old_value + 0.05 * new_value )
+
+    # this will change VERY slowly but probably be VERY stable...
+    if lag_level == 3:
+        return ( 0.995 * old_value + 0.005 * new_value )
+
+#
+def translate_uv_to_celsius(uv, tc_type='K'):
+    
+    uv = uv + 0.0
+
+    if tc_type == 'K':
+        return K_TYPE_TRANSLATE_UV_TO_C(uv)
+    if tc_type == 'J':
+        return J_TYPE_TRANSLATE_UV_TO_C(uv)
+    if tc_type == 'N':
+        return N_TYPE_TRANSLATE_UV_TO_C(uv)
+# 
+def translate_celsius_to_uv(c, tc_type='K'):
+
+    c = c + 0.0
+
+    if tc_type == 'K':
+        return K_TYPE_TRANSLATE_C_TO_UV(c)
+    if tc_type == 'J':
+        return J_TYPE_TRANSLATE_C_TO_UV(c)
+    if tc_type == 'N':
+        return N_TYPE_TRANSLATE_C_TO_UV(c)
+
+
+
+
+
+
 # main "printing loop."
 
 def print_list():
@@ -141,44 +186,5 @@ while True:
   # Ctrl+C pressed, so...
     spi_tc77.close()
     spi.close() # close the ports before exit
-
-
-# first order filters of varying "hardness."
-def apply_lag_filter(old_value, new_value, lag_level):
-    if lag_level == 0:
-        return new_value
-
-    if lag_level == 1:
-        return ( 0.9 * old_value + 0.1 * new_value )
-
-    if lag_level == 2:
-        return ( 0.95 * old_value + 0.05 * new_value )
-
-    # this will change VERY slowly but probably be VERY stable...
-    if lag_level == 3:
-        return ( 0.995 * old_value + 0.005 * new_value )
-
-#
-def translate_uv_to_celsius(uv, tc_type='K'):
-    
-    uv = uv + 0.0
-
-    if tc_type == 'K':
-        return K_TYPE_TRANSLATE_UV_TO_C(uv)
-    if tc_type == 'J':
-        return J_TYPE_TRANSLATE_UV_TO_C(uv)
-    if tc_type == 'N':
-        return N_TYPE_TRANSLATE_UV_TO_C(uv)
-# 
-def translate_celsius_to_uv(c, tc_type='K'):
-
-    c = c + 0.0
-
-    if tc_type == 'K':
-        return K_TYPE_TRANSLATE_C_TO_UV(c)
-    if tc_type == 'J':
-        return J_TYPE_TRANSLATE_C_TO_UV(c)
-    if tc_type == 'N':
-        return N_TYPE_TRANSLATE_C_TO_UV(c)
 
 
