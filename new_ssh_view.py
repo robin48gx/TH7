@@ -33,7 +33,7 @@ for i in range(0, 7):
 # 1st paramater is the No. of the channel; on PCB,
 # 2nd is the filtering level, [0..3] (higher is harder filtering)
 # 3rd is the T/C type as 1 upper-case character;
-# currently supporting types: K, T, J, N, E, B
+# currently supporting types: K, T, J, N, E, B, S
 
 
 # channel, filter level, type, offset (offset is coming soon..)
