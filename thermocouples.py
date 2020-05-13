@@ -877,6 +877,6 @@ def S_TYPE_TRANSLATE_UV_TO_C(uv):
     else:
         return 0.0
 
-    T = c0 + uv * (c1 + uv * (c2 + uv * (c3 + uv * (c4 + uv * (c5 + uv * (c6 + uv * (c7 + uv * (c8 + uv * (c9))))))))))
+    T = c0 + uv * (c1 + uv * (c2 + uv * (c3 + uv * (c4 + uv * (c5 + uv * (c6 + uv * (c7 + uv * (c8 + uv * (c9)))))))))
     return T
 
