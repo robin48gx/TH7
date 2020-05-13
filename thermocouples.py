@@ -808,7 +808,7 @@ def S_TYPE_TRANSLATE_C_TO_UV(c):
     else:
         return 0.0
 
-    E = c0 + c * (c1 + c * (c2 + c * (c2 + c * (c3 + c * (c4 + c * (c5 + c * (c6 + c * (c7 + c * (c8))))))))
+    E = c0 + c * (c1 + c * (c2 + c * (c2 + c * (c3 + c * (c4 + c * (c5 + c * (c6 + c * (c7 + c * (c8)))))))))
     return E
 
 
