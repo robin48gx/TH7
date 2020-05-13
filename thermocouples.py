@@ -543,7 +543,7 @@ def B_TYPE_TRANSLATE_C_TO_UV(c):
 
     c = c + 0.0
 
-    if c < B_TYPE_MIN_C or c > E_TYPE_MAX_B:
+    if c < B_TYPE_MIN_C or c > B_TYPE_MAX_C:
         return 0.0
 
     c0 = c1 = c2 = c3 = c4 = c5 = c6 = c7 = c8 = 0.0
