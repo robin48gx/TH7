@@ -44,7 +44,7 @@ thermocouples[0] = Thermocouple_Channel(1, 3, "K")
 thermocouples[1] = Thermocouple_Channel(2, 3, "T")
 
 thermocouples[2] = Thermocouple_Channel(3, 3, "J")
-thermocouples[3] = Thermocouple_Channel(4, 3, "R")
+thermocouples[3] = Thermocouple_Channel(4, 3, "S")
 thermocouples[4] = Thermocouple_Channel(5, 3, "E")
 #
 # ADD NEW ONES HERE
@@ -86,6 +86,8 @@ def translate_uv_to_celsius(uv, tc_type="K"):
         return B_TYPE_TRANSLATE_UV_TO_C(uv)
     if tc_type == "R":
         return R_TYPE_TRANSLATE_UV_TO_C(uv)
+    if tc_type == "S":
+        return S_TYPE_TRANSLATE_UV_TO_C(uv)
 
     if tc_type == "uv":
         return -300.0
@@ -108,7 +110,8 @@ def translate_celsius_to_uv(c, tc_type="K"):
         return B_TYPE_TRANSLATE_C_TO_UV(c)
     if tc_type == "R":
         return R_TYPE_TRANSLATE_C_TO_UV(c)
-    
+    if tc_type == "S":
+        return S_TYPE_TRANSLATE_C_TO_UV(c)
     
     if tc_type == "uv":
         return -300.0
