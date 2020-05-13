@@ -33,7 +33,7 @@ for i in range(0, 7):
 # 1st paramater is the No. of the channel; on PCB,
 # 2nd is the filtering level, [0..3] (higher is harder filtering)
 # 3rd is the T/C type as 1 upper-case character;
-# currently supporting types: K, T, J, N, E
+# currently supporting types: K, T, J, N, E, B
 
 
 # channel, filter level, type, offset (offset is coming soon..)
@@ -41,11 +41,11 @@ for i in range(0, 7):
 # channel 1...
 thermocouples[0] = Thermocouple_Channel(1, 3, "K")
 # channel 2...
-thermocouples[1] = Thermocouple_Channel(2, 3, "K")
+thermocouples[1] = Thermocouple_Channel(2, 3, "T")
 
-thermocouples[2] = Thermocouple_Channel(3, 3, "K")
-thermocouples[3] = Thermocouple_Channel(4, 3, "K")
-thermocouples[4] = Thermocouple_Channel(5, 3, "K")
+thermocouples[2] = Thermocouple_Channel(3, 3, "J")
+thermocouples[3] = Thermocouple_Channel(4, 3, "B")
+thermocouples[4] = Thermocouple_Channel(5, 3, "E")
 #
 # ADD NEW ONES HERE
 #
@@ -82,6 +82,8 @@ def translate_uv_to_celsius(uv, tc_type="K"):
         return T_TYPE_TRANSLATE_UV_TO_C(uv)
     if tc_type == "E":
         return E_TYPE_TRANSLATE_UV_TO_C(uv)
+    if tc_type == "B":
+        return B_TYPE_TRANSLATE_UV_TO_C(uv)
 
     if tc_type == "uv":
         return -300.0
@@ -100,6 +102,8 @@ def translate_celsius_to_uv(c, tc_type="K"):
         return T_TYPE_TRANSLATE_C_TO_UV(c)
     if tc_type == "E":
         return E_TYPE_TRANSLATE_C_TO_UV(c)
+    if tc_type == "B":
+        return B_TYPE_TRANSLATE_C_TO_UV(c)
     
     
     if tc_type == "uv":
@@ -133,7 +137,7 @@ def print_list():
         # to factor in the pcb temp in this field, rename "uv_with_pcb" to "uv".
         uv_with_pcb = uv + translate_celsius_to_uv(pcb_temp, tc_type)
         
-        # lowest is J type at -8095 uv
+        # lowest is J type at -8095 uv, others are lower but no one will be measuring -250 oC?
         if uv > -8100:
             print (("Channel %d: {:15.2f} uV, temp={:10.1f} oC, type=%-5s [F=%d]".format(uv, translate_uv_to_celsius(uv_with_pcb, tc_type)) % (channel, tc_type, f_level)))
         else:

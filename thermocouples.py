@@ -41,6 +41,13 @@ E_TYPE_MIN_UV = -8825.0
 E_TYPE_MAX_UV = 76373.0
 
 
+B_TYPE_MIN_C = 250.0 #uv->C polys start at 0 oC but not C->uv
+B_TYPE_MAX_C = 1820.0
+
+B_TYPE_MIN_UV = 291.0
+B_TYPE_MAX_UV = 13820.0
+
+
 # converts supplied temperature,  C to uV based on J-type polynomials
 def J_TYPE_TRANSLATE_C_TO_UV(c):
 
@@ -530,3 +537,85 @@ def E_TYPE_TRANSLATE_UV_TO_C(uv):
 
     T = c0 + uv * (c1 + uv * (c2 + uv * (c3 + uv * (c4 + uv * (c5 + uv * (c6 + uv * (c7 + uv * (c8 + uv * (c9)))))))))
     return T
+
+
+def B_TYPE_TRANSLATE_C_TO_UV(c):
+
+    c = c + 0.0
+
+    if c < B_TYPE_MIN_C or c > E_TYPE_MAX_B:
+        return 0.0
+
+    c0 = c1 = c2 = c3 = c4 = c5 = c6 = c7 = c8 = 0.0
+    
+    if 0.0 < c < 630.15:
+
+        c0 = 0.0
+        c1 = -2.4650818346e-1
+        c2 = 5.9040421171e-3
+        c3 = -1.3257931636e-6
+        c4 = 1.5668291901e-9
+        c5 = -1.6944529240e-12
+        c6 = 6.2290347094e-16
+        c7 = 0.0
+        c8 = 0.0
+
+    elif 630.15 < c < 1820.0:
+
+        c0 = -3.8938168621e3
+        c1 = 2.8571747470e1
+        c2 = -8.4885104785e-2
+        c3 = 1.5785280164e-4
+        c4 = -1.6835344864e-7
+        c5 = 1.1109794013e-10
+        c6 = -4.4515431033e-14
+        c7 = 9.8975640821e-18
+        c8 = -9.3791330289e-22
+
+    else:
+        return 0.0
+
+    E = c0 + c * (c1 + c * (c2 + c * (c2 + c * (c3 + c * (c4 + c * (c5 + c * (c6 + c * (c7 + c * (c8)))))))))
+    return E
+
+
+def B_TYPE_TRANSLATE_UV_TO_C(uv):
+
+    uv = uv + 0.0
+
+    if uv < B_TYPE_MIN_UV or uv > B_TYPE_MAX_UV:
+        return 0.0
+
+    c0 = c1 = c2 = c3 = c4 = c5 = c6 = c7 = c8 = 0.0
+
+    if 291.0 < uv < 2431.0:
+
+        c0 = 9.8423321e1
+        c1 = 6.9971500e-1
+        c2 = -8.4765304e-4
+        c3 = 1.0052644e-6
+        c4 = -8.3345952e-10
+        c5 = 4.5508542e-13
+        c6 = -1.5523037e-16
+        c7 = 2.9886750e-20
+        c8 = -2.4742860e-24
+
+    elif 2431.0 < uv < 13820.0:
+
+        c0 = 2.1315071e2
+        c1 = 2.8510504e-1
+        c2 = -5.2742887e-5
+        c3 = 9.9160804e-9
+        c4 = -1.2965303e-12
+        c5 = 1.1195870e-16
+        c6 = -6.0625199e-21
+        c7 = 1.8661696e-25
+        c8 = -2.4878585e-30
+
+    else:
+        return 0;
+
+    T = c0 + uv * (c1 + uv * (c2 + uv * (c3 + uv * (c4 + uv * (c5 + uv * (c6 + uv * (c7 + uv * (c8))))))))
+    return T
+
+
