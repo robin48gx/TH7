@@ -25,6 +25,7 @@ def DB_init():
     db = sqlite3.connect(DB_file)
     db.execute('CREATE TABLE IF NOT EXISTS th7_logging (unixepoch INTEGER, channel INTEGER, tc_type STRING, offset FLOAT,uv FLOAT, uv_plus_pcb FLOAT, pcb_temp FLOAT)')
     db.close()
+    return 0
 
 # returns an object, `conn', that works as a fd for sqlite3 db
 # will be `None' (null/unset) if connection fails
@@ -32,7 +33,7 @@ def DB_init():
 def DB_connect():
     conn = None
     try:
-        conn = sqlite3.connect(DB_file)
+        conn = sqlite3.connect(DB_file, isolation_level=None)
     except Error as e:
         print(e) # TODO: actually manage exceptions
     return conn
@@ -44,9 +45,11 @@ def DB_connect():
 
 def DB_populate(conn, dataset):
     sql = ''' INSERT INTO th7_logging(unixepoch,channel,tc_type,offset,uv,uv_plus_pcb,pcb_temp) VALUES (?,?,?,?,?,?,?) '''
+    print(dataset)
     cur = conn.cursor()
     last = cur.lastrowid # for sanity check
     cur.execute(sql, dataset)
+    conn.commit()
 
     # does `return (cur.lastrowid > last)' work in python?
     if cur.lastrowid > last:
@@ -92,7 +95,7 @@ thermocouples[1] = Thermocouple_Channel(2, 3, "T")
 # channel 3...
 thermocouples[2] = Thermocouple_Channel(3, 3, "J")
 # channel 4...
-thermocouples[3] = Thermocouple_Channel(4, 3, "S")
+#thermocouples[3] = Thermocouple_Channel(4, 3, "S")
 # channel 5...
 #thermocouples[4] = Thermocouple_Channel(5, 3, "K")
 # channel 6...
@@ -124,6 +127,9 @@ def apply_lag_filter(old_value, new_value, lag_level):
 #
 def translate_uv_to_celsius(uv, tc_type="K"):
     
+    if uv is None:
+        return -300.0
+    
     uv = uv + 0.0
 
     if tc_type == "K":
@@ -145,8 +151,13 @@ def translate_uv_to_celsius(uv, tc_type="K"):
 
     if tc_type == "uv":
         return -300.0
+
+    return -300.0
 # 
 def translate_celsius_to_uv(c, tc_type="K"):
+
+    if c is None:
+        return -300.0
 
     c = c + 0.0
 
@@ -171,11 +182,14 @@ def translate_celsius_to_uv(c, tc_type="K"):
         return -300.0
 
 
-
+    return -300.0
 
 # main "printing loop."
 
 def print_list():
+
+    global DB_enabled
+    global DB_log_unconfigured
 
     print datetime.datetime.now()
 
@@ -194,6 +208,9 @@ def print_list():
         offset  = thermocouples[i].offset
 
 
+        if uv is None:
+            uv = -9000.0
+
         # the 'uV' field being printed does not factor in the 'estimated' pcb temp
         # however, the temperature field does and is in fact accurate.
         # to factor in the pcb temp in this field, rename "uv_with_pcb" to "uv".
@@ -206,7 +223,7 @@ def print_list():
             print ("Channel %d: DISCONNECT OR OPEN CIRCUIT" % channel)
 
         # database logging
-        if DB_Enabled == True:
+        if DB_enabled == True:
             if DB_conn != None:
                 # can probably write to db now
                 if not (DB_log_unconfigured == False and f_level == -1):
@@ -299,10 +316,11 @@ while True:
         # now first order filter the micro-volts to reduce random noise
         if first_run == 1:
             #thermocouples[a-1].value_uv = uv
-            # starts out every channel with the uv as if it was at 1 oC
-            thermocouples[a-1].value_uv = translate_celsius_to_uv((0.0 - pcb_temp), thermocouples[a-1].thermocouple_type)
+            # starts out every channel with the uv as if it was at 15 oC
+            thermocouples[a-1].value_uv = translate_celsius_to_uv(15.0, thermocouples[a-1].thermocouple_type)   \
+                    + translate_celsius_to_uv(pcb_temp, thermocouples[a-1].thermocouple_type)
             # TODO: add a starter field able to be configured by user
-            # default value = 0 oC, or disabled to run up from a GND down-pull
+            # default value = 15 oC, or disabled to run up from a GND down-pull
         else:
             thermocouples[a-1].value_uv = apply_lag_filter(thermocouples[a-1].value_uv, uv, thermocouples[a-1].filter_level) 
 
@@ -319,5 +337,5 @@ while True:
   # Ctrl+C pressed, so...
     spi_tc77.close()
     spi.close() # close the ports before exit
-
-
+    # close db connection
+    DB_conn.close()
