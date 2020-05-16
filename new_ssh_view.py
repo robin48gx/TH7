@@ -7,7 +7,53 @@ import time
 import datetime
 import RPi.GPIO as GPIO
 import numpy as np
+import sqlite3
 from thermocouples import * # bad practice but everything is properly namespaced.....
+
+
+# database name and path relative to where this file exists
+DB_file = "TH7.db"
+DB_conn = None
+DB_enabled = False # tells the program whether to attempt to log to database or not
+DB_log_unconfigured = False # if unconfigured channels should be logged or not, be default: No
+
+# Attempts to initialise the database file if it can
+# (potential problem with timezone mismatch..)
+# th7_logging (unixepoch INTEGER, channel INTEGER, tc_type STRING, offset FLOAT, uv FLOAT)
+
+def DB_init():
+    db = sqlite3.connect(DB_file)
+    db.execute('CREATE TABLE IF NOT EXISTS th7_logging (unixepoch INTEGER, channel INTEGER, tc_type STRING, offset FLOAT,uv FLOAT, uv_plus_pcb FLOAT, pcb_temp FLOAT)')
+    db.close()
+
+# returns an object, `conn', that works as a fd for sqlite3 db
+# will be `None' (null/unset) if connection fails
+
+def DB_connect():
+    conn = None
+    try:
+        conn = sqlite3.connect(DB_file)
+    except Error as e:
+        print(e) # TODO: actually manage exceptions
+    return conn
+
+# using the list `dataset', insert a new row of information into the db
+# python auto-expands the ?'s and replaces w/ each element of `dataset' 
+# returns `True' if the insertion was succesful
+# `dataset' must contain (unixepoch, channel, tc_type, offset, uv, uv_plus_pcb, pcb_temp)
+
+def DB_populate(conn, dataset):
+    sql = ''' INSERT INTO th7_logging(unixepoch,channel,tc_type,offset,uv,uv_plus_pcb,pcb_temp) VALUES (?,?,?,?,?,?,?) '''
+    cur = conn.cursor()
+    last = cur.lastrowid # for sanity check
+    cur.execute(sql, dataset)
+
+    # does `return (cur.lastrowid > last)' work in python?
+    if cur.lastrowid > last:
+        return True
+    return False
+
+
 
 class Thermocouple_Channel:
 
@@ -25,12 +71,13 @@ thermocouples = np.array([0, 0, 0, 0, 0, 0, 0], dtype=object)
 
 # initialise array/list with 7 "blanks"
 for i in range(0, 7):
-    thermocouples[i] = Thermocouple_Channel(i+1)
+    # filter level = -1 indicates the channel is `blank'
+    thermocouples[i] = Thermocouple_Channel(i+1, -1)
 
 
 
 # Here, define each thermocouple channel connected to the TH7/ in use.
-# 1st paramater is the No. of the channel; on PCB,
+# 1st parameter is the No. of the channel; on PCB,
 # 2nd is the filtering level, [0..3] (higher is harder filtering)
 # 3rd is the T/C type as 1 upper-case character;
 # currently supporting types: K, T, J, N, E, B, S
@@ -42,19 +89,23 @@ for i in range(0, 7):
 thermocouples[0] = Thermocouple_Channel(1, 3, "K")
 # channel 2...
 thermocouples[1] = Thermocouple_Channel(2, 3, "T")
-
+# channel 3...
 thermocouples[2] = Thermocouple_Channel(3, 3, "J")
+# channel 4...
 thermocouples[3] = Thermocouple_Channel(4, 3, "S")
-thermocouples[4] = Thermocouple_Channel(5, 3, "E")
-#
-# ADD NEW ONES HERE
-#
+# channel 5...
+#thermocouples[4] = Thermocouple_Channel(5, 3, "K")
+# channel 6...
+#thermocouples[5] = Thermocouple_Channel(6, 3, "K")
+# channel 7.
+#thermocouples[6] = Thermocouple_Channel(7, 3, "K")
+
 
 
 
 # first order filters of varying "hardness."
 def apply_lag_filter(old_value, new_value, lag_level):
-    if lag_level == 0:
+    if lag_level == 0 or lag_level == 1:
         return new_value
 
     if lag_level == 1:
@@ -63,9 +114,12 @@ def apply_lag_filter(old_value, new_value, lag_level):
     if lag_level == 2:
         return ( 0.95 * old_value + 0.05 * new_value )
 
-    # this will change VERY slowly but probably be VERY stable...
     if lag_level == 3:
         return ( 0.995 * old_value + 0.005 * new_value )
+
+    # this will change VERY slowly but probably be VERY stable...
+    if lag_level == 4:
+        return ( 0.9995 * old_value + 0.0005 * new_value )
 
 #
 def translate_uv_to_celsius(uv, tc_type="K"):
@@ -137,6 +191,7 @@ def print_list():
         f_level = thermocouples[i].filter_level
         channel = thermocouples[i].channel
         uv      = thermocouples[i].value_uv
+        offset  = thermocouples[i].offset
 
 
         # the 'uV' field being printed does not factor in the 'estimated' pcb temp
@@ -150,6 +205,16 @@ def print_list():
         else:
             print ("Channel %d: DISCONNECT OR OPEN CIRCUIT" % channel)
 
+        # database logging
+        if DB_Enabled == True:
+            if DB_conn != None:
+                # can probably write to db now
+                if not (DB_log_unconfigured == False and f_level == -1):
+                    # (unixepoch, channel, tc_type, offset, uv, uv_plus_pcb, pcb_temp)
+                    data = (time.time(), channel, tc_type, offset, uv, uv_with_pcb, pcb_temp)
+                    # this will disable (attempts at) logging if an insert failed
+                    DB_enabled = DB_populate(DB_conn, data)
+
     vadjst = ("vadj:    \t%2f" % (vadj))
     vadj2st =  "vadj_now: %2f  Pi Vdd %f" % (vadj_now, 5.0/vadj)
     #print "PCB_TEMP: %2f" % pcb_temp
@@ -157,6 +222,19 @@ def print_list():
     print vadjst
     print vadj2st
     print uvadj
+
+
+# initialise database
+DB_init()
+
+# try to establish connection with database
+DB_conn = DB_connect()
+
+# this would be true if the database connection failed
+# TODO: fix error handling
+if DB_conn == None:
+    DB_enabled = False
+    
 
 
 spi = spidev.SpiDev()  # spi instance to read 12 bit ADC	
