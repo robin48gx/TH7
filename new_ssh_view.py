@@ -41,11 +41,11 @@ for i in range(0, 7):
 # channel, filter level, type, offset (in oC)
 
 # channel 1...
-thermocouples[0] = Thermocouple_Channel(1, 3, "K", -2.7)
+thermocouples[0] = Thermocouple_Channel(1, 2, "K", 4.0)
 # channel 2...
-thermocouples[1] = Thermocouple_Channel(2, 3, "K", 4.0)
+thermocouples[1] = Thermocouple_Channel(2, 2, "K", 4.0)
 # channel 3...
-thermocouples[2] = Thermocouple_Channel(3, 3, "K", 7.4)
+thermocouples[2] = Thermocouple_Channel(3, 2, "K",5.0 )
 # channel 4...
 #thermocouples[3] = Thermocouple_Channel(4, 3, "S")
 # channel 5...
@@ -67,7 +67,7 @@ def apply_lag_filter(old_value, new_value, lag_level):
         return ( 0.9 * old_value + 0.1 * new_value )
 
     if lag_level == 2:
-        return ( 0.95 * old_value + 0.05 * new_value )
+        return ( 0.97 * old_value + 0.03 * new_value )
 
     if lag_level == 3:
         return ( 0.995 * old_value + 0.005 * new_value )
@@ -165,12 +165,12 @@ def print_list():
         # however, the temperature field does and is in fact accurate.
         # to factor in the pcb temp in this field, rename "uv_with_pcb" to "uv".
         uv_with_pcb = uv + translate_celsius_to_uv(pcb_temp, tc_type)
-        uv_with_pcb = uv_with_pcb + translate_uv_to_celsius( translate_celsius_to_uv(offset, tc_type), tc_type)
+        #uv_with_pcb = uv_with_pcb + translate_uv_to_celsius( translate_celsius_to_uv(offset, tc_type), tc_type)
         
         
         # lowest is J type at -8095 uv, others are lower but no one will be measuring -250 oC?
         if uv > -8100:
-            print (("Channel %d: {:15.2f} uV, temp={:10.1f} oC, type=%-5s [F=%d]".format(uv, translate_uv_to_celsius(uv_with_pcb, tc_type)) % (channel, tc_type, f_level)))
+            print (("Channel %d: {:15.2f} uV, temp={:10.1f} oC, type=%-5s [F=%d]".format(uv, translate_uv_to_celsius(uv_with_pcb, tc_type)+offset) % (channel, tc_type, f_level)))
         else:
             print ("Channel %d: DISCONNECT OR OPEN CIRCUIT" % channel)
 
@@ -268,4 +268,4 @@ while True:
     spi_tc77.close()
     spi.close() # close the ports before exit
     # close db connection
-    DB_conn.close()
+    
