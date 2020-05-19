@@ -7,55 +7,7 @@ import time
 import datetime
 import RPi.GPIO as GPIO
 import numpy as np
-import sqlite3
 from thermocouples import * # bad practice but everything is properly namespaced.....
-
-
-# database name and path relative to where this file exists
-DB_file = "TH7.db"
-DB_conn = None
-DB_enabled = False # tells the program whether to attempt to log to database or not
-DB_log_unconfigured = False # if unconfigured channels should be logged or not, be default: No
-
-# Attempts to initialise the database file if it can
-# (potential problem with timezone mismatch..)
-# th7_logging (unixepoch INTEGER, channel INTEGER, tc_type STRING, offset FLOAT, uv FLOAT)
-
-def DB_init():
-    db = sqlite3.connect(DB_file)
-    db.execute('CREATE TABLE IF NOT EXISTS th7_logging (unixepoch INTEGER, channel INTEGER, tc_type STRING, offset FLOAT,uv FLOAT, uv_plus_pcb FLOAT, pcb_temp FLOAT)')
-    db.close()
-    return 0
-
-# returns an object, `conn', that works as a fd for sqlite3 db
-# will be `None' (null/unset) if connection fails
-
-def DB_connect():
-    conn = None
-    try:
-        conn = sqlite3.connect(DB_file, isolation_level=None)
-    except Error as e:
-        print(e) # TODO: actually manage exceptions
-    return conn
-
-# using the list `dataset', insert a new row of information into the db
-# python auto-expands the ?'s and replaces w/ each element of `dataset' 
-# returns `True' if the insertion was succesful
-# `dataset' must contain (unixepoch, channel, tc_type, offset, uv, uv_plus_pcb, pcb_temp)
-
-def DB_populate(conn, dataset):
-    sql = ''' INSERT INTO th7_logging(unixepoch,channel,tc_type,offset,uv,uv_plus_pcb,pcb_temp) VALUES (?,?,?,?,?,?,?) '''
-    print(dataset)
-    cur = conn.cursor()
-    last = cur.lastrowid # for sanity check
-    cur.execute(sql, dataset)
-    conn.commit()
-
-    # does `return (cur.lastrowid > last)' work in python?
-    if cur.lastrowid > last:
-        return True
-    return False
-
 
 
 class Thermocouple_Channel:
@@ -86,14 +38,14 @@ for i in range(0, 7):
 # currently supporting types: K, T, J, N, E, B, S
 
 
-# channel, filter level, type, offset (offset is coming soon..)
+# channel, filter level, type, offset (in oC)
 
 # channel 1...
-thermocouples[0] = Thermocouple_Channel(1, 3, "K")
+thermocouples[0] = Thermocouple_Channel(1, 3, "K", -2.7)
 # channel 2...
-thermocouples[1] = Thermocouple_Channel(2, 3, "T")
+thermocouples[1] = Thermocouple_Channel(2, 3, "K", 4.0)
 # channel 3...
-thermocouples[2] = Thermocouple_Channel(3, 3, "J")
+thermocouples[2] = Thermocouple_Channel(3, 3, "K", 7.4)
 # channel 4...
 #thermocouples[3] = Thermocouple_Channel(4, 3, "S")
 # channel 5...
@@ -188,8 +140,6 @@ def translate_celsius_to_uv(c, tc_type="K"):
 
 def print_list():
 
-    global DB_enabled
-    global DB_log_unconfigured
 
     print datetime.datetime.now()
 
@@ -215,6 +165,8 @@ def print_list():
         # however, the temperature field does and is in fact accurate.
         # to factor in the pcb temp in this field, rename "uv_with_pcb" to "uv".
         uv_with_pcb = uv + translate_celsius_to_uv(pcb_temp, tc_type)
+        uv_with_pcb = uv_with_pcb + translate_uv_to_celsius( translate_celsius_to_uv(offset, tc_type), tc_type)
+        
         
         # lowest is J type at -8095 uv, others are lower but no one will be measuring -250 oC?
         if uv > -8100:
@@ -222,15 +174,6 @@ def print_list():
         else:
             print ("Channel %d: DISCONNECT OR OPEN CIRCUIT" % channel)
 
-        # database logging
-        if DB_enabled == True:
-            if DB_conn != None:
-                # can probably write to db now
-                if not (DB_log_unconfigured == False and f_level == -1):
-                    # (unixepoch, channel, tc_type, offset, uv, uv_plus_pcb, pcb_temp)
-                    data = (time.time(), channel, tc_type, offset, uv, uv_with_pcb, pcb_temp)
-                    # this will disable (attempts at) logging if an insert failed
-                    DB_enabled = DB_populate(DB_conn, data)
 
     vadjst = ("vadj:    \t%2f" % (vadj))
     vadj2st =  "vadj_now: %2f  Pi Vdd %f" % (vadj_now, 5.0/vadj)
@@ -239,19 +182,6 @@ def print_list():
     print vadjst
     print vadj2st
     print uvadj
-
-
-# initialise database
-DB_init()
-
-# try to establish connection with database
-DB_conn = DB_connect()
-
-# this would be true if the database connection failed
-# TODO: fix error handling
-if DB_conn == None:
-    DB_enabled = False
-    
 
 
 spi = spidev.SpiDev()  # spi instance to read 12 bit ADC	
