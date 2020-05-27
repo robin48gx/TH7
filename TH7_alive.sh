@@ -1,9 +1,9 @@
 
 
-a=`ps -ale | grep TH7_logger.py`
+a=`ps -ale | grep new_ssh_view.py`
 
 if [ -z "$a" ]; then
-	cd /home/pi/projects/TH7;
-	./TH7_logger.py > /dev/null &
+	cd /home/pi/TH7_N;
+	./new_ssh_view.py > /dev/null &
 fi
 

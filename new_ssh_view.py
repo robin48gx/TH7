@@ -13,7 +13,7 @@ from thermocouples import * # bad practice but everything is properly namespaced
 
 dt = datetime.datetime.now()
 logging.basicConfig(filename='TH7.log',level=logging.DEBUG)
-logging.warning('TH7 LOG FILE STARTED ' + dt.__str__())
+logging.warning('TH7 LOG FILE STARTED ' + dt.__str__() + '\n')
 
 class Thermocouple_Channel:
 
@@ -46,13 +46,13 @@ for i in range(0, 7):
 # channel, filter level, type, offset (in oC)
 
 # channel 1...
-thermocouples[0] = Thermocouple_Channel(1, 3, "K", 3.0)
+thermocouples[0] = Thermocouple_Channel(1, 3, "K", 0.0)
 # channel 2...
-thermocouples[1] = Thermocouple_Channel(2, 3, "K",  4.0)
+thermocouples[1] = Thermocouple_Channel(2, 3, "K",  2.0)
 # channel 3...
-thermocouples[2] = Thermocouple_Channel(3, 3, "K", 4.0 )
+thermocouples[2] = Thermocouple_Channel(3, 3, "K", 2.0 )
 # channel 4...
-thermocouples[3] = Thermocouple_Channel(4, 3, "K", 1.0)
+thermocouples[3] = Thermocouple_Channel(4, 3, "K", 2.0)
 # channel 5...
 thermocouples[4] = Thermocouple_Channel(5, 3, "K", 2.0)
 # channel 6...
@@ -148,7 +148,8 @@ def print_list():
 
     global logging
     global old_minute
-    print datetime.datetime.now()
+    dt = datetime.datetime.now()
+    print dt
     minute = datetime.datetime.now().minute
     st = "" 
     piv = 5.0/vadj
@@ -183,7 +184,8 @@ def print_list():
             st = ("Channel %d: DISCONNECT OR OPEN CIRCUIT" % channel)
         print st
         if (minute != old_minute):
-            logging.info ( st)
+            logging.info (st)
+            #logging.info (dt)
 
     vadjst = ("vadj:    \t%2f" % (vadj))
     vadj2st =  "vadj_now: %2f  Pi Vdd %f" % (vadj_now, 5.0/vadj)
@@ -198,6 +200,7 @@ def print_list():
         logging.info (vadjst)
         logging.info (vadj2st)
         logging.info (uvadj)
+        logging.info (dt) # 1 timestamp per "section" is enough
         old_minute = minute
 
 spi = spidev.SpiDev()  # spi instance to read 12 bit ADC	
