@@ -181,8 +181,9 @@ def print_list():
         #print ("first_run %f"%first_run)        
         # lowest is J type at -8095 uv, others are lower but no one will be measuring -250 oC?
         if uv > -8100:
-            st =  (("Channel %d: {:15.2f} uV, temp={:10.1f} oC, type=%-5s [F=%d]".format(uv, translate_uv_to_celsius(uv_with_pcb, tc_type)+offset) % (channel, tc_type, f_level)))
-        else:
+            # st =  (("Channel %d: {:15.2f} uV, temp={:10.1f} oC, type=%-5s [F=%d]".format(uv, translate_uv_to_celsius(uv_with_pcb, tc_type)+offset) % (channel, tc_type, f_level)))
+	    st =  (("Channel %d: {:15.2f} uV, temp={:10f} oC, type=%-5s [F=%d]".format(uv, translate_uv_to_celsius(uv_with_pcb, tc_type)+offset) % (channel, tc_type, f_level)))
+	else:
             st = ("Channel %d: DISCONNECT OR OPEN CIRCUIT" % channel)
 
         if uv > 38000: #38mV (for G=101)
