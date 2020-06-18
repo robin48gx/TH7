@@ -48,19 +48,19 @@ for i in range(0, 7):
 # channel, filter level, type, offset (in oC)
 
 # channel 1...
-thermocouples[0] = Thermocouple_Channel(1, 3, "K", 0.0)
+thermocouples[0] = Thermocouple_Channel(1, 2, "K", 0.0)
 # channel 2...
-thermocouples[1] = Thermocouple_Channel(2, 3, "K",  2.0)
+thermocouples[1] = Thermocouple_Channel(2, 2, "K",  0.0)
 # channel 3...
-thermocouples[2] = Thermocouple_Channel(3, 3, "K", 2.0 )
+thermocouples[2] = Thermocouple_Channel(3, 2, "K", 0.0 )
 # channel 4...
-thermocouples[3] = Thermocouple_Channel(4, 3, "K", 2.0)
+thermocouples[3] = Thermocouple_Channel(4, 2, "K", 0.0)
 # channel 5...
-thermocouples[4] = Thermocouple_Channel(5, 3, "K", 2.0)
+thermocouples[4] = Thermocouple_Channel(5, 2, "K", 0.0)
 # channel 6...
-#thermocouples[5] = Thermocouple_Channel(6, 3, "K")
+thermocouples[5] = Thermocouple_Channel(6, 2, "K")
 # channel 7.
-#thermocouples[6] = Thermocouple_Channel(7, 3, "K")
+thermocouples[6] = Thermocouple_Channel(7, 2, "K")
 
 
 
@@ -182,12 +182,12 @@ def print_list():
         # lowest is J type at -8095 uv, others are lower but no one will be measuring -250 oC?
         if uv > -8100:
             # st =  (("Channel %d: {:15.2f} uV, temp={:10.1f} oC, type=%-5s [F=%d]".format(uv, translate_uv_to_celsius(uv_with_pcb, tc_type)+offset) % (channel, tc_type, f_level)))
-	    st =  (("Channel %d: {:15.2f} uV, temp={:10f} oC, type=%-5s [F=%d]".format(uv, translate_uv_to_celsius(uv_with_pcb, tc_type)+offset) % (channel, tc_type, f_level)))
+	    st =  (("Channel %d: {:15.2f} uV, temp={:10.1f} oC, type=%-5s [F=%d]".format(uv, translate_uv_to_celsius(uv_with_pcb, tc_type)+offset) % (channel, tc_type, f_level)))
 	else:
             st = ("Channel %d: DISCONNECT OR OPEN CIRCUIT" % channel)
 
         if uv > 38000: #38mV (for G=101)
-            st = ("Chanel %d: ERROR HIGH" % channel)
+            st = ("Channel %d: ERROR HIGH" % channel)
         print st
         if (minute != old_minute):
             logging.info (st)
