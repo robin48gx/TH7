@@ -8,7 +8,7 @@ import datetime
 import RPi.GPIO as GPIO
 import numpy as np
 import logging
-from thermocouples import * # bad practice but everything is properly namespaced.....
+from thermocouples import * 
 
 
 
@@ -19,13 +19,14 @@ logging.warning('TH7 LOG FILE STARTED ' + dt.__str__() + '\n')
 
 class Thermocouple_Channel:
 
-    def __init__(self, channel, filter_level=0, thermocouple_type="uv", offset=0.0):
+    def __init__(self, channel, filter_level=0, thermocouple_type="uv", offset=0.0, gain=106.2):
 
         self.channel = channel
         self.filter_level = filter_level
         self.thermocouple_type = thermocouple_type
-        self.offset = offset # in C COMING SOON!!
+        self.offset = offset 
         self.value_uv = 0.0
+        self.gain = gain
 
 
 # references/pointers to thermocouple_channel objects are stored here
@@ -45,10 +46,10 @@ for i in range(0, 7):
 # currently supporting types: K, T, J, N, E, B, S
 
 
-# channel, filter level, type, offset (in oC)
+# channel, filter level, type, offset (in oC), gain (default 106)
 
 # channel 1...
-thermocouples[0] = Thermocouple_Channel(1, 2, "K", 0.0)
+thermocouples[0] = Thermocouple_Channel(1, 2, "K", -2.5, 106.8)
 # channel 2...
 thermocouples[1] = Thermocouple_Channel(2, 2, "K",  0.0)
 # channel 3...
@@ -56,11 +57,11 @@ thermocouples[2] = Thermocouple_Channel(3, 2, "K", 0.0 )
 # channel 4...
 thermocouples[3] = Thermocouple_Channel(4, 2, "K", 0.0)
 # channel 5...
-thermocouples[4] = Thermocouple_Channel(5, 2, "K", 0.0)
+thermocouples[4] = Thermocouple_Channel(5, 2, "K", 5.0)
 # channel 6...
-thermocouples[5] = Thermocouple_Channel(6, 2, "K")
+thermocouples[5] = Thermocouple_Channel(6, 2, "K", 0.0, 107)
 # channel 7.
-thermocouples[6] = Thermocouple_Channel(7, 2, "K")
+thermocouples[6] = Thermocouple_Channel(7, 2, "K", -1.6, 107)
 
 
 
@@ -265,8 +266,8 @@ while True:
         bigV = (perfect/4096.0)*5.0
 
         # the signal has been amplified G=101 so we need to multiply by 10,100.00
-        uv = bigV*10100
-
+        #uv = bigV* 106 * 100
+        uv = bigV * 100 * thermocouples[a-1].gain
 
         # now first order filter the micro-volts to reduce random noise
         if first_run >= 0:
