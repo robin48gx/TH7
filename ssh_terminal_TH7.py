@@ -17,6 +17,16 @@ dt = datetime.datetime.now()
 logging.basicConfig(filename='TH7.log',level=logging.DEBUG)
 logging.warning('TH7 LOG FILE STARTED ' + dt.__str__() + '\n')
 
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+GPIO.setup(22, GPIO.OUT) # D2 LED   
+GPIO.setup(17, GPIO.OUT) # D3 LED
+GPIO.output(22,GPIO.HIGH) # D2 LED OFF
+GPIO.output(17,GPIO.LOW) # D3 LED ON
+
+kk=0
+pcb_temp = 25.0
+channels = [0,0,0,0,0,0,0,0]
 class Thermocouple_Channel:
 
     def __init__(self, channel, filter_level=0, thermocouple_type="uv", offset=0.0, gain=106.2):
@@ -284,6 +294,18 @@ while True:
           first_run = first_run - 1
 	pcb_temp = (number/8.0) * 0.0625
 	print "Temp: ", pcb_temp, resp
+        #
+        # service LED blinking
+        #
+        if kk<10: 
+          GPIO.output(17,GPIO.LOW) # D3 LED ON
+          GPIO.output(22,GPIO.HIGH) # D2 LED OFF
+        else:
+          GPIO.output(17,GPIO.HIGH) # D3 LED OFF
+          GPIO.output(22,GPIO.LOW) # D2 LED ON
+        kk = kk + 1
+        if kk>20:
+           kk=0
 
   except KeyboardInterrupt:
   # Ctrl+C pressed, so...
