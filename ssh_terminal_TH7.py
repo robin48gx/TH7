@@ -74,6 +74,29 @@ thermocouples[5] = Thermocouple_Channel(6, 2, "K", 0.0, 107)
 thermocouples[6] = Thermocouple_Channel(7, 2, "K", -1.6, 107)
 
 
+def write_json_files():
+	# temperature file
+	test_buffer = "["
+
+	for i in range(0, len(thermocouples)):
+
+        	tc_type = thermocouples[i].thermocouple_type
+        	f_level = thermocouples[i].filter_level
+        	channel = thermocouples[i].channel
+        	uv      = thermocouples[i].value_uv
+        	offset  = thermocouples[i].offset
+		gain    = thermocouples[i].gain
+
+	
+		test_buffer += "{\"id\": %d, \"value\": %f, \"filter_level\": %d, \"type\": \"%s\", \"offset\": %f, \"gain\": %f }" % (i, uv, f_level, tc_type, offset, gain)
+		if (not (i >= len(thermocouples)-1)):
+			test_buffer += ","
+	test_buffer += "]"
+
+	f = open("thermocouples.json", "w")
+	f.write(test_buffer)
+	f.close()
+	# other info pcb etc
 
 
 # first order filters of varying "hardness."
@@ -155,17 +178,20 @@ def translate_celsius_to_uv(c, tc_type="K"):
     return -300.0
 
 # main "printing loop."
-
+old_second = datetime.datetime.now().second
 old_minute = datetime.datetime.now().minute
 def print_list():
 
     global logging
     global old_minute
+    global old_second
     dt = datetime.datetime.now()
     print dt
     minute = datetime.datetime.now().minute
     st = "" 
     piv = 5.0/vadj
+
+    second_now = datetime.datetime.now().second
 
     if piv < 4.8 or piv > 5.3:
          print "Voltage error\nCheck Raspberry Pi power supply."
@@ -203,6 +229,10 @@ def print_list():
         if (minute != old_minute):
             logging.info (st)
             #logging.info (dt)
+
+	if (old_second != second_now):
+            write_json_files()
+            old_second = second_now
 
     vadjst = ("vadj:    \t%2f" % (vadj))
     vadj2st =  "vadj_now: %2f  Pi Vdd %f" % (vadj_now, 5.0/vadj)
