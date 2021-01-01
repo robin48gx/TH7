@@ -11,7 +11,16 @@ import logging
 from thermocouples import * 
 
 
+pcb_temp = 25.0
 
+vadj =1.0
+vadj_now=1.0
+vref=0.0
+ch1 = 0.0
+a = 0
+result=0
+
+pi_vdd=5.0
 
 dt = datetime.datetime.now()
 logging.basicConfig(filename='TH7.log',level=logging.DEBUG)
@@ -37,6 +46,7 @@ class Thermocouple_Channel:
         self.offset = offset 
         self.value_uv = 0.0
         self.gain = gain
+	self.value_c = -300.0
 
 
 # references/pointers to thermocouple_channel objects are stored here
@@ -86,9 +96,10 @@ def write_json_files():
         	uv      = thermocouples[i].value_uv
         	offset  = thermocouples[i].offset
 		gain    = thermocouples[i].gain
+		tempc   = thermocouples[i].value_c
 
 	
-		test_buffer += "{\"id\": %d, \"value\": %f, \"filter_level\": %d, \"type\": \"%s\", \"offset\": %f, \"gain\": %f }" % (i, uv, f_level, tc_type, offset, gain)
+		test_buffer += "{\"id\": %d, \"value\": %f, \"filter_level\": %d, \"type\": \"%s\", \"offset\": %f, \"gain\": %f, \"tempc\": %f }" % (i, uv, f_level, tc_type, offset, gain, tempc)
 		if (not (i >= len(thermocouples)-1)):
 			test_buffer += ","
 	test_buffer += "]"
@@ -96,8 +107,20 @@ def write_json_files():
 	f = open("thermocouples.json", "w")
 	f.write(test_buffer)
 	f.close()
-	# other info pcb etc
 
+	# other info pcb etc
+	test_buffer = "["
+
+	test_buffer += "{\"pcb_temp\": %f}," % ( pcb_temp )
+	test_buffer += "{\"pivdd\": %f}," % ( pi_vdd )
+	test_buffer += "{\"pivadj\": %f}," % ( vadj )
+	test_buffer += "{\"pivref\": %f}" % ( vref )
+
+	test_buffer += "]"
+
+	f = open("th7pcbinfo.json", "w")
+	f.write(test_buffer)
+	f.close()
 
 # first order filters of varying "hardness."
 def apply_lag_filter(old_value, new_value, lag_level):
@@ -185,11 +208,13 @@ def print_list():
     global logging
     global old_minute
     global old_second
+    global pi_vdd
     dt = datetime.datetime.now()
     print dt
     minute = datetime.datetime.now().minute
     st = "" 
-    piv = 5.0/vadj
+    pi_v = 0.0
+    pi_vdd = piv = (5.0/vadj)
 
     second_now = datetime.datetime.now().second
 
@@ -215,12 +240,16 @@ def print_list():
         uv_with_pcb = uv + translate_celsius_to_uv(pcb_temp, tc_type)
         #uv_with_pcb = uv_with_pcb + translate_uv_to_celsius( translate_celsius_to_uv(offset, tc_type), tc_type)
         
+	thermocouples[i].value_c = ( translate_uv_to_celsius(uv_with_pcb, tc_type) + offset)
+	valuec = thermocouples[i].value_c #..
+
         #print ("first_run %f"%first_run)        
         # lowest is J type at -8095 uv, others are lower but no one will be measuring -250 oC?
         if uv > -8100:
             # st =  (("Channel %d: {:15.2f} uV, temp={:10.1f} oC, type=%-5s [F=%d]".format(uv, translate_uv_to_celsius(uv_with_pcb, tc_type)+offset) % (channel, tc_type, f_level)))
-	    st =  (("Channel %d: {:15.2f} uV, temp={:10.1f} oC, type=%-5s [F=%d]".format(uv, translate_uv_to_celsius(uv_with_pcb, tc_type)+offset) % (channel, tc_type, f_level)))
+	    st =  (("Channel %d: {:15.2f} uV, temp={:10.1f} oC, type=%-5s [F=%d]".format(uv, valuec) % (channel, tc_type, f_level)))
 	else:
+	    thermocouples[i].value_c = -300.0 # error detection !
             st = ("Channel %d: DISCONNECT OR OPEN CIRCUIT" % channel)
 
         if uv > 38000: #38mV (for G=101)
@@ -260,14 +289,6 @@ spi_tc77.max_speed_hz =  10000
 # open spi port 0, device (CS) 0
 
 first_run = 15
-
-pcb_temp = 25.0
-vadj =1.0
-vadj_now=1.0
-vref=0.0
-ch1 = 0.0
-a = 0
-result=0
 
 
 
