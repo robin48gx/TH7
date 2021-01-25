@@ -69,7 +69,8 @@ for i in range(0, 7):
 # channel, filter level, type, offset (in oC), gain (default 106)
 
 # channel 1...
-thermocouples[0] = Thermocouple_Channel(1, 2, "K", -2.5, 106.8)
+# thermocouples[0] = Thermocouple_Channel(1, 2, "K", -2.5, 106.8) # for example to adjust the offset to -2.5oC and the gain to 106.8
+thermocouples[1] = Thermocouple_Channel(2, 2, "K",  0.0)
 # channel 2...
 thermocouples[1] = Thermocouple_Channel(2, 2, "K",  0.0)
 # channel 3...
@@ -79,9 +80,9 @@ thermocouples[3] = Thermocouple_Channel(4, 2, "K", 0.0)
 # channel 5...
 thermocouples[4] = Thermocouple_Channel(5, 2, "K", 5.0)
 # channel 6...
-thermocouples[5] = Thermocouple_Channel(6, 2, "K", 0.0, 107)
+thermocouples[5] = Thermocouple_Channel(6, 2, "K", 0.0)
 # channel 7.
-thermocouples[6] = Thermocouple_Channel(7, 2, "K", -1.6, 107)
+thermocouples[6] = Thermocouple_Channel(7, 2, "K", 0.0)
 
 
 def write_json_files():
