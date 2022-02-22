@@ -55,7 +55,7 @@ thermocouples = np.array([0, 0, 0, 0, 0, 0, 0], dtype=object)
 # initialise array/list with 7 "blanks"
 for i in range(0, 7):
     # filter level = -1 indicates the channel is `blank'
-    thermocouples[i] = Thermocouple_Channel(i+1, 2, "R", 0)
+    thermocouples[i] = Thermocouple_Channel(i+1, 2, "K", 0)
 
 
 
