@@ -6,6 +6,10 @@ def do_configure(channel):
 
 # grid [x,y] where y goes down
 
+def do_pb(argyarg):
+    info("is this rubbish cos in a box?", argyarg)
+
+
 app = App(title="TH7 Thermocouple Pi-HAT", width=600, height=600)
 
 
@@ -40,14 +44,14 @@ th_choice = ["K","K","K","K","K","K","K","R"]
 
 for i in range (1,8):
   channel[i] = Text(th7_box, text=str(i), grid=[0,ydown], align="left")
-  th_choice[i] = Combo(th7_box, options=["K", "J", "R", "T"], grid=[1,ydown], align="left"),
+  th_choice[i] = Combo(th7_box, options=["K", "J", "R", "T"], grid=[1,ydown], align="left")
   conf[i] = PushButton(th7_box, command=do_configure(i), text="config...", grid=[2,ydown], align="left")
   temp[i] = Text(th7_box, text="137.4", grid=[3,ydown], align="left")
   status[i] = Text(th7_box, text="OK", grid=[4,ydown], align="left")
   ydown += 1
 
 
-
+pb = PushButton(app, command=do_pb(i), text="config...", align="left")
 my_cat = Picture(bot_box, image="dog.png")
 
 
