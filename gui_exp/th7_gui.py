@@ -9,13 +9,14 @@ def do_configure(args):
 
 
 
-app = App(title="TH7 Thermocouple Pi-HAT", width=600, height=600)
+app = App(title="TH7 Thermocouple Pi-HAT", width=700, height=800)
 
 title_box = Box(app, width="fill", align="top", border=True, height=100)
 title = Text(title_box, text="TH7 Vcc=5.11 Vref=4.096 status=OK ", align="bottom")
 
 th7_box = Box(app, width="fill", layout="grid", align="top", border=True)
 bot_box = Box(app, width="fill", layout="auto", align="bottom", border=True, height=100)
+title = Text(bot_box, text="TH7 status of SQLITE LOGGING etc  ", align="bottom")
 
 
 ydown = 0
@@ -27,11 +28,11 @@ blank_line = Text(th7_box, text=" ", grid=[0,ydown], align="left")
 ydown += 1
 
 #title BAR over th readings and control
-channel_no = Text(th7_box, text=" channel ", grid=[0,ydown], align="left")
-thermocouple_type = Text(th7_box, text=" Type ", grid=[1,ydown], align="left")
-conf1_title = Text(th7_box, text="configure ", grid=[2,ydown], align="left")
+channel_no = Text(th7_box, text="channel ", grid=[0,ydown], align="centre")
+thermocouple_type = Text(th7_box, text="Type ", grid=[1,ydown], align="centre")
+conf1_title = Text(th7_box, text="configure ", grid=[2,ydown], align="centre")
 temperature_title = Text(th7_box, text="  Temperature ", grid=[3,ydown], align="left")
-status_title = Text(th7_box, text="  status ", grid=[4,ydown], align="left")
+status_title = Text(th7_box, text="  status ", grid=[4,ydown], align="centre")
 ydown += 1
 
 channel = [1,2,3,4,5,6,7,8]
@@ -51,10 +52,10 @@ conf[6] = PushButton(th7_box, command=lambda : do_configure(6) , text="config"+s
 conf[7] = PushButton(th7_box, command=lambda : do_configure(7) , text="config"+str(7), grid=[2,ydown+6], align="left")
 
 for i in range (1,8):
-  channel[i] = Text(th7_box, text=str(i), grid=[0,ydown], align="left")
-  th_choice[i] = Combo(th7_box, options=["K", "J", "R", "T"], grid=[1,ydown], align="left")
+  channel[i] = Text(th7_box, text=str(i), grid=[0,ydown], align="centre")
+  th_choice[i] = Combo(th7_box, options=["K", "J", "R", "T"], grid=[1,ydown], align="centre")
   temp[i] = Text(th7_box, text="137.4", grid=[3,ydown], align="left")
-  status[i] = Text(th7_box, text="OK", grid=[4,ydown], align="left")
+  status[i] = Text(th7_box, text="OK", grid=[4,ydown], align="centre")
   ydown += 1
 
 
