@@ -1,15 +1,47 @@
-from guizero import App, Combo, Text, CheckBox, PushButton, info, Box, Picture
+from guizero import App, Combo, Text, CheckBox, PushButton, info, Box, Picture, Window, Slider, TextBox
+import time
+
+
+
+
+
+
+def cancel_config(channel):
+    print ("cancel config")
+
+def set_config(channel,o,g):
+    try:
+      offset = float(o)
+      gain   = float(g)
+    except ValueError:
+        print('invalid number') # do whatever
+    print (" set config ", channel, "offset ", offset, "gain ", gain);
 
 #def do_configure(channel):
-def do_configure(args):
-    print (args)
+def do_configure(channel):
+    print (channel)
     # print ("configure", channel)
     # if channel <= 7:
        # info("configure", channel)
+    configwin = Window(app, title="Config/Adjust for Channel " + str(channel),height=400,width=400)
+    #slide = Slider(configwin, start=10, end=-10, height=100, horizontal=False)
+    #slide.resize(200,300)
+    #slide.tk=0.05
+    offset_text = Text(configwin,text="Offset/Zero calibration", align="top")
+    gain_text = Text(configwin,text="Gain calibration", align="bottom")
+    o = TextBox(configwin, text="-0.1", align="top")
+    #pb_set = PushButton(configwin, text="SET", command=set_config, args=[channel,(lambda:float(o.value)),2.2],align="right")
+    g = TextBox(configwin, text="0.11", align="bottom")
+    z = Text(configwin,text="Gain calibration", align="bottom")
+    pb_set = PushButton(configwin, text="SET", command=set_config, args=[channel,o.value,g.value],align="right")
+    pb_cancel = PushButton(configwin, text="CANCEL", command=cancel_config, args=[channel],align="left")
+
+
 
 
 
 app = App(title="TH7 Thermocouple Pi-HAT", width=700, height=800)
+
 
 title_box = Box(app, width="fill", align="top", border=True, height=100)
 title = Text(title_box, text="TH7 Vcc=5.11 Vref=4.096 status=OK ", align="bottom")
