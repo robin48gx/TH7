@@ -1,8 +1,8 @@
 from guizero import App, Combo, Text, CheckBox, PushButton, info, Box, Picture, Window, Slider, TextBox
 import time
 
-def cancel_config(channel):
-    print ("cancel config")
+#def cancel_config(channel):
+#    print ("cancel config")
 
 def set_config(channel,o,g):
     try:
@@ -10,26 +10,19 @@ def set_config(channel,o,g):
       gain   = float(g.value)
     except ValueError:
         print('invalid number') # do whatever
-    print (" set config ", channel, "offset ", offset, "gain ", gain);
+        info (title="calibration not set",text="syntax error in calibration value")
+    s  = " set config ", channel, "offset ", offset, "gain ", gain
+    info (title="Calibration set",text=s)
 
 #def do_configure(channel):
 def do_configure(channel):
     print (channel)
-    # print ("configure", channel)
-    # if channel <= 7:
-       # info("configure", channel)
-    configwin = Window(app, title="Config/Adjust for Channel " + str(channel),height=400,width=400)
-    #slide = Slider(configwin, start=10, end=-10, height=100, horizontal=False)
-    #slide.resize(200,300)
-    #slide.tk=0.05
+    configwin = Window(app, title="Config/Adjust for Channel " + str(channel),height=200,width=700)
     offset_text = Text(configwin,text="Offset/Zero calibration", align="top")
-    gain_text = Text(configwin,text="Gain calibration", align="bottom")
     o = TextBox(configwin, text="-0.1", align="top")
-    #pb_set = PushButton(configwin, text="SET", command=set_config, args=[channel,(lambda:float(o.value)),2.2],align="right")
     g = TextBox(configwin, text="0.11", align="bottom")
-    z = Text(configwin,text="Gain calibration", align="bottom")
-    pb_set = PushButton(configwin, text="SET", command=set_config, args=[channel,o,g],align="right")
-    pb_cancel = PushButton(configwin, text="CANCEL", command=cancel_config, args=[channel],align="left")
+    gain_text = Text(configwin,text="Gain calibration", align="bottom")
+    pb_set = PushButton(configwin, text="SET CALIBRATION", command=set_config, args=[channel,o,g],align="right")
 
 
 
@@ -55,11 +48,11 @@ blank_line = Text(th7_box, text=" ", grid=[0,ydown], align="left")
 ydown += 1
 
 #title BAR over th readings and control
-channel_no = Text(th7_box, text="channel ", grid=[0,ydown], align="centre")
-thermocouple_type = Text(th7_box, text="Type ", grid=[1,ydown], align="centre")
-conf1_title = Text(th7_box, text="configure ", grid=[2,ydown], align="centre")
+channel_no = Text(th7_box, text="channel ", grid=[0,ydown], align="left")
+thermocouple_type = Text(th7_box, text="Type ", grid=[1,ydown], align="left")
+conf1_title = Text(th7_box, text="configure ", grid=[2,ydown], align="left")
 temperature_title = Text(th7_box, text="  Temperature ", grid=[3,ydown], align="left")
-status_title = Text(th7_box, text="  status ", grid=[4,ydown], align="centre")
+status_title = Text(th7_box, text="  status ", grid=[4,ydown], align="left")
 ydown += 1
 
 channel = [1,2,3,4,5,6,7,8]
@@ -70,7 +63,7 @@ th_choice = ["K","K","K","K","K","K","K","R"]
 
 
 
-conf[1] = PushButton(th7_box, command=lambda : do_configure(1) , text="config"+str(1), grid=[2,ydown+0], align="left")
+conf[1] = PushButton(th7_box, command=do_configure, args=[1], text="config"+str(1), grid=[2,ydown+0], align="left")
 conf[2] = PushButton(th7_box, command=lambda : do_configure(2) , text="config"+str(2), grid=[2,ydown+1], align="left")
 conf[3] = PushButton(th7_box, command=lambda : do_configure(3) , text="config"+str(3), grid=[2,ydown+2], align="left")
 conf[4] = PushButton(th7_box, command=lambda : do_configure(4) , text="config"+str(4), grid=[2,ydown+3], align="left")
@@ -79,10 +72,10 @@ conf[6] = PushButton(th7_box, command=lambda : do_configure(6) , text="config"+s
 conf[7] = PushButton(th7_box, command=lambda : do_configure(7) , text="config"+str(7), grid=[2,ydown+6], align="left")
 
 for i in range (1,8):
-  channel[i] = Text(th7_box, text=str(i), grid=[0,ydown], align="centre")
-  th_choice[i] = Combo(th7_box, options=["K", "J", "R", "T"], grid=[1,ydown], align="centre")
+  channel[i] = Text(th7_box, text=str(i), grid=[0,ydown], align="left")
+  th_choice[i] = Combo(th7_box, options=["K", "J", "R", "T"], grid=[1,ydown], align="left")
   temp[i] = Text(th7_box, text="137.4", grid=[3,ydown], align="left")
-  status[i] = Text(th7_box, text="OK", grid=[4,ydown], align="centre")
+  status[i] = Text(th7_box, text="OK", grid=[4,ydown], align="left")
   ydown += 1
 
 
