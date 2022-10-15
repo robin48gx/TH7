@@ -1,18 +1,13 @@
 from guizero import App, Combo, Text, CheckBox, PushButton, info, Box, Picture, Window, Slider, TextBox
 import time
 
-
-
-
-
-
 def cancel_config(channel):
     print ("cancel config")
 
 def set_config(channel,o,g):
     try:
-      offset = float(o)
-      gain   = float(g)
+      offset = float(o.value)
+      gain   = float(g.value)
     except ValueError:
         print('invalid number') # do whatever
     print (" set config ", channel, "offset ", offset, "gain ", gain);
@@ -33,7 +28,7 @@ def do_configure(channel):
     #pb_set = PushButton(configwin, text="SET", command=set_config, args=[channel,(lambda:float(o.value)),2.2],align="right")
     g = TextBox(configwin, text="0.11", align="bottom")
     z = Text(configwin,text="Gain calibration", align="bottom")
-    pb_set = PushButton(configwin, text="SET", command=set_config, args=[channel,o.value,g.value],align="right")
+    pb_set = PushButton(configwin, text="SET", command=set_config, args=[channel,o,g],align="right")
     pb_cancel = PushButton(configwin, text="CANCEL", command=cancel_config, args=[channel],align="left")
 
 
