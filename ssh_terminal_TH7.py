@@ -9,7 +9,7 @@ import RPi.GPIO as GPIO
 import numpy as np
 import logging
 from thermocouples import *
-
+from th7_gui import *
 
 pcb_temp = 25.0
 
@@ -80,6 +80,8 @@ thermocouples[6] = Thermocouple_Channel(7, 3, "K", -0.0, 106.8)
 
 def write_json_files():
         # temperature file
+    global vref
+    global vadj
     test_buffer = "["
 
     for i in range(0, len(thermocouples)):
@@ -121,7 +123,7 @@ def apply_lag_filter(old_value, new_value, lag_level):
     if lag_level == 0 or lag_level == 1:
         return new_value
 
-	
+
     if lag_level == 1:
         return ( 0.9 * old_value + 0.1 * new_value )
 
@@ -204,6 +206,8 @@ def print_list():
     global old_minute
     global old_second
     global pi_vdd
+    global vadj
+
     dt = datetime.datetime.now()
     print (dt)
     minute = datetime.datetime.now().minute
@@ -292,77 +296,91 @@ spi_tc77.max_speed_hz =  10000
 
 first_run = 15
 
+def process_thermocouples():
+    global a
+    global vref
+    global first_run
+    global vadj
+    global kk
+
+    a = a + 1
+    if a>8:
+        os.system("clear") # this is for tunning in a terminal over ssh on a pi
+        a = 0
+        print_list()
+
+    time.sleep(0.01)
+
+    # prepare bits for ADC command to read channel
+    cb1 = 4 + 2 + ((a & 4) >> 2)
+    cb2 = (a & 3) << 6
+    resp = spi.xfer2([cb1, cb2, 0x00])
+
+    # calculate vref and adjustment variables
+    if a == 0:
+        vref = resp[1] * 256.0 + resp[2] * 1.0
+        vadj_now = vref/3355.4432
+        if first_run >= 0:
+            vadj = 1.0
+        vadj = vadj_now * 0.1 + vadj * 0.9
+        print ("vref: ", vref, "vadj: ", vadj)
+
+    # read into thermocouple channels + apply adjustment and "lag filters"
+    if a >= 1 and a < 8:
+
+        # this variable is not referenced anywhere else?
+        ch1_adc12_5v = ((resp[1] * 256.0 + resp[2]*1.0) - vref) * vadj
+
+        ch1 = resp[1] * 256.0 + resp[2]*1.0
+        perfect = ((vref - ch1) * vadj)
+        bigV = (perfect/4096.0)*5.0
+
+        # the signal has been amplified G=101 so we need to multiply by 10,100.00
+        #uv = bigV* 106 * 100
+        uv = bigV * 100 * thermocouples[a-1].gain
+
+        # now first order filter the micro-volts to reduce random noise
+        # if first_run >= 0:
+        if abs(uv - thermocouples[a-1].value_uv) > 1000.0:
+            # starts out every channel with the uv unfiltered
+            thermocouples[a-1].value_uv = uv
+        else:
+            thermocouples[a-1].value_uv = apply_lag_filter(thermocouples[a-1].value_uv, uv, thermocouples[a-1].filter_level)
 
 
-while True:
-    try:
-        a = a + 1
-        if a>8:
-            os.system("clear") # this is for tunning in a terminal over ssh on a pi
-            a = 0
-            print_list()
-
-        time.sleep(0.01)
-
-        # prepare bits for ADC command to read channel
-        cb1 = 4 + 2 + ((a & 4) >> 2)
-        cb2 = (a & 3) << 6
-        resp = spi.xfer2([cb1, cb2, 0x00])
-
-        # calculate vref and adjustment variables
-        if a == 0:
-            vref = resp[1] * 256.0 + resp[2] * 1.0
-            vadj_now = vref/3355.4432
-            if first_run >= 0:
-                vadj = 1.0
-            vadj = vadj_now * 0.1 + vadj * 0.9
-            print ("vref: ", vref, "vadj: ", vadj)
-
-        # read into thermocouple channels + apply adjustment and "lag filters"
-        if a >= 1 and a < 8:
-
-            # this variable is not referenced anywhere else?
-            ch1_adc12_5v = ((resp[1] * 256.0 + resp[2]*1.0) - vref) * vadj
-
-            ch1 = resp[1] * 256.0 + resp[2]*1.0
-            perfect = ((vref - ch1) * vadj)
-            bigV = (perfect/4096.0)*5.0
-
-            # the signal has been amplified G=101 so we need to multiply by 10,100.00
-            #uv = bigV* 106 * 100
-            uv = bigV * 100 * thermocouples[a-1].gain
-
-            # now first order filter the micro-volts to reduce random noise
-            # if first_run >= 0:
-            if abs(uv - thermocouples[a-1].value_uv) > 1000.0:
-                # starts out every channel with the uv unfiltered
-                thermocouples[a-1].value_uv = uv
-            else:
-                thermocouples[a-1].value_uv = apply_lag_filter(thermocouples[a-1].value_uv, uv, thermocouples[a-1].filter_level)
+    if a == 8: # read the temperature from the tc77
+        resp = spi_tc77.xfer2([0x00, 0x00, 0x00, 0x00]) # transfer four bytes
+        number = resp[0] * 256 + resp[1]
+        if first_run >= 0:
+            first_run = first_run - 1
+        pcb_temp = (number/8.0) * 0.0625
+        print ("Temp: ", pcb_temp, resp)
+        #
+        # service LED blinking
+        #
+        if kk<10:
+            GPIO.output(17,GPIO.LOW) # D3 LED ON
+            GPIO.output(22,GPIO.HIGH) # D2 LED OFF
+        else:
+            GPIO.output(17,GPIO.HIGH) # D3 LED OFF
+            GPIO.output(22,GPIO.LOW) # D2 LED ON
+        kk = kk + 1
+        if kk>20:
+            kk=0
 
 
-        if a == 8: # read the temperature from the tc77
-            resp = spi_tc77.xfer2([0x00, 0x00, 0x00, 0x00]) # transfer four bytes
-            number = resp[0] * 256 + resp[1]
-            if first_run >= 0:
-                first_run = first_run - 1
-            pcb_temp = (number/8.0) * 0.0625
-            print ("Temp: ", pcb_temp, resp)
-            #
-            # service LED blinking
-            #
-            if kk<10:
-                GPIO.output(17,GPIO.LOW) # D3 LED ON
-                GPIO.output(22,GPIO.HIGH) # D2 LED OFF
-            else:
-                GPIO.output(17,GPIO.HIGH) # D3 LED OFF
-                GPIO.output(22,GPIO.LOW) # D2 LED ON
-            kk = kk + 1
-            if kk>20:
-                kk=0
+app = create_gui()
+text = Text(app,text="1")
+text.repeat(100,process_thermocouples)
+app.display()
 
-    except KeyboardInterrupt:
-    # Ctrl+C pressed, so...
-        spi_tc77.close()
-        spi.close() # close the ports before exit
-        # close db connection
+
+
+
+#while True:
+#    try:
+#
+#except KeyboardInterrupt:
+# Ctrl+C pressed, so...
+#   spi_tc77.close()
+#   spi.close() # close the ports before exit
