@@ -29,6 +29,9 @@ class ThermocoupleSetup:
     def on_idle(self):
         print("The application is idle. Performing idle tasks...")
         # Reschedule the idle callback
+         # print(self.channel_widgets)
+        self.channel_widgets[0]["value_label"].config(text     =  "99.9")
+        self.channel_widgets[0]["value_label"].update()
         self.root.after(self.idle_interval, self.on_idle)
 
     def create_widgets(self):
@@ -83,7 +86,7 @@ class ThermocoupleSetup:
             tc_type = channel["tc_type"].get()
             offset = channel["offset"].get()
             gain = channel["gain"].get()
-
+            print(self.channel_widgets)
             try:
                 offset = float(offset)
             except ValueError:
