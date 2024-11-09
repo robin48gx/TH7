@@ -73,7 +73,7 @@ class ThermocoupleSetup:
         self.offset_value = 0.0
 
         # Thermocouple Types
-        self.tc_types = ["K", "J", "R", "T", "N", "NC"]
+        self.tc_types = ["K", "J", "N", "T", "E", "B", "R", "S", "uv"]
 
         # Create UI elements
         self.create_widgets()
@@ -105,14 +105,31 @@ class ThermocoupleSetup:
             else:
                 k["value_label"].config(text=f'{thermocouples[idx].value_c:.2f}ºC')
                 k["value_label"].update()
+                
+            print(k["gain"].get())
             idx += 1
         self.root.after(self.idle_interval, self.on_idle)
 
     def create_widgets(self):
         # Header Label
-        header_label = tk.Label(self.root, text="Thermocouple Channel Setup", font=("Arial", 14))
+        header_label = tk.Label(self.root, text="SDS:TH7 Thermocouple Channel Setup", font=("Arial", 14))
         header_label.grid(row=0, column=0, columnspan=4, pady=10)
 
+        h1 = tk.Label(self.root, text="Channel", font=("Arial", 12))
+        h1.grid(row=1, column=0, columnspan=1, pady=10)
+        
+        h2 = tk.Label(self.root, text="Type", font=("Arial", 12))
+        h2.grid(row=1, column=1, columnspan=1, pady=10)
+        
+        h3 = tk.Label(self.root, text="Offset", font=("Arial", 12))
+        h3.grid(row=1, column=2, columnspan=1, pady=10)
+        
+        h4 = tk.Label(self.root, text="Gain", font=("Arial", 12))
+        h4.grid(row=1, column=3, columnspan=1, pady=10)
+        
+        h5 = tk.Label(self.root, text="Measurement", font=("Arial", 12))
+        h5.grid(row=1, column=4, columnspan=1, pady=10)
+        
         # Create the thermocouple channels (7 channels)
         self.channel_widgets = []
         for i in range(7):
@@ -120,31 +137,31 @@ class ThermocoupleSetup:
 
         # Submit Button to process the input
         self.submit_button = tk.Button(self.root, text="Submit", command=self.submit_setup)
-        self.submit_button.grid(row=8, columnspan=4, pady=20)
+        self.submit_button.grid(row=9, columnspan=4, pady=20)
 
     def create_channel_widgets(self, channel_number):
         # Create label for the channel
         channel_label = tk.Label(self.root, text=f"Channel {channel_number + 1}")
-        channel_label.grid(row=channel_number + 1, column=0, padx=10, pady=5)
+        channel_label.grid(row=channel_number + 2, column=0, padx=10, pady=5)
 
         # Create dropdown for thermocouple type
         tc_type_var = tk.StringVar(value=self.tc_types[0])  # Default to 'K'
         tc_type_menu = tk.OptionMenu(self.root, tc_type_var, *self.tc_types)
-        tc_type_menu.grid(row=channel_number + 1, column=1, padx=10, pady=5)
+        tc_type_menu.grid(row=channel_number + 2, column=1, padx=10, pady=5)
 
         # Create entry for offset
         offset_var = tk.StringVar(value=str(self.offset_value))  # Default offset
-        offset_entry = tk.Entry(self.root, textvariable=offset_var)
-        offset_entry.grid(row=channel_number + 1, column=2, padx=10, pady=5)
+        offset_entry = tk.Entry(self.root, textvariable=offset_var, width=7)
+        offset_entry.grid(row=channel_number + 2, column=2, padx=10, pady=5)
 
         # Create entry for gain
         gain_var = tk.DoubleVar(value=self.gain_value)  # Default gain
-        gain_entry = tk.Entry(self.root, textvariable=gain_var)
-        gain_entry.grid(row=channel_number + 1, column=3, padx=10, pady=5)
+        gain_entry = tk.Entry(self.root, textvariable=gain_var, width=7)
+        gain_entry.grid(row=channel_number + 2, column=3, padx=10, pady=5)
 
         # Value field to display calculated temperature
         value_label = tk.Label(self.root, text="Value: Not Calculated", width=20)
-        value_label.grid(row=channel_number + 1, column=4, padx=10, pady=5)
+        value_label.grid(row=channel_number + 2, column=4, padx=10, pady=5)
 
         # Store widgets in a list for future access
         self.channel_widgets.append({
@@ -165,6 +182,11 @@ class ThermocoupleSetup:
                 offset = float(offset)
             except ValueError:
                 messagebox.sho
+                
+            thermocouples[i].offset = offset
+            thermocouples[i].gain = gain
+            thermocouples[i].thermocouple_type = tc_type
+            print(tc_type)
 
 
 def init_spi():
@@ -216,6 +238,64 @@ def apply_lag_filter(old_value, new_value, lag_level):
     if lag_level == 4:
         return ( 0.9995 * old_value + 0.0005 * new_value )
 
+def translate_uv_to_celsius(uv, tc_type="K"):
+
+    if uv is None:
+        return -300.0
+
+    uv = uv + 0.0
+
+    if tc_type == "K":
+        return K_TYPE_TRANSLATE_UV_TO_C(uv)
+    if tc_type == "J":
+        return J_TYPE_TRANSLATE_UV_TO_C(uv)
+    if tc_type == "N":
+        return N_TYPE_TRANSLATE_UV_TO_C(uv)
+    if tc_type == "T":
+        return T_TYPE_TRANSLATE_UV_TO_C(uv)
+    if tc_type == "E":
+        return E_TYPE_TRANSLATE_UV_TO_C(uv)
+    if tc_type == "B":
+        return B_TYPE_TRANSLATE_UV_TO_C(uv)
+    if tc_type == "R":
+        return R_TYPE_TRANSLATE_UV_TO_C(uv)
+    if tc_type == "S":
+        return S_TYPE_TRANSLATE_UV_TO_C(uv)
+
+    if tc_type == "uv":
+        return -300.0
+
+    return -300.0
+#
+def translate_celsius_to_uv(c, tc_type="K"):
+
+    if c is None:
+        return -300.0
+
+    c = c + 0.0
+
+    if tc_type == "K":
+        return K_TYPE_TRANSLATE_C_TO_UV(c)
+    if tc_type == "J":
+        return J_TYPE_TRANSLATE_C_TO_UV(c)
+    if tc_type == "N":
+        return N_TYPE_TRANSLATE_C_TO_UV(c)
+    if tc_type == "T":
+        return T_TYPE_TRANSLATE_C_TO_UV(c)
+    if tc_type == "E":
+        return E_TYPE_TRANSLATE_C_TO_UV(c)
+    if tc_type == "B":
+        return B_TYPE_TRANSLATE_C_TO_UV(c)
+    if tc_type == "R":
+        return R_TYPE_TRANSLATE_C_TO_UV(c)
+    if tc_type == "S":
+        return S_TYPE_TRANSLATE_C_TO_UV(c)
+
+    if tc_type == "uv":
+        return -300.0
+
+
+    return -300.0
 
 def read_channel(thermocouple):
     global vadj
@@ -240,7 +320,7 @@ def read_channel(thermocouple):
 
             # the signal has been amplified G=101 so we need to multiply by 10,100.00
             #uv = bigV* 106 * 100
-        uv = bigV * 100 * 106.8
+        uv = bigV * 100 * thermocouple.gain
         if first_run == 0:
             thermocouple.value_uv = uv
         else:
@@ -249,9 +329,10 @@ def read_channel(thermocouple):
             else:
                 thermocouple.value_uv = apply_lag_filter(thermocouple.value_uv, uv, thermocouple.filter_level)
 
-        uv_with_pcb = thermocouple.value_uv + K_TYPE_TRANSLATE_C_TO_UV(pcb_temp)
-        valuec = K_TYPE_TRANSLATE_UV_TO_C(uv_with_pcb)
-        thermocouple.value_c = valuec
+        tc_type = thermocouple.thermocouple_type
+        uv_with_pcb = thermocouple.value_uv + translate_celsius_to_uv(pcb_temp, tc_type)
+        valuec = translate_uv_to_celsius(uv_with_pcb, tc_type)
+        thermocouple.value_c = valuec + thermocouple.offset
 
         print(f"Ch {a}, temperature: {valuec} oC, uv: {uv_with_pcb}")
         
