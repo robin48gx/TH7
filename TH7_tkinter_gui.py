@@ -64,6 +64,7 @@ thermocouples[6] = Thermocouple_Channel(7, 2, "K", -0.0, 106.8)
 
 
 class ThermocoupleSetup:
+     
     def __init__(self, root):
         self.root = root
         self.root.title("SDS Thermocouple Channel Setup")
@@ -88,6 +89,7 @@ class ThermocoupleSetup:
         print("The application is idle. Performing idle tasks...")
         current_temperature()
         calc_vref()
+        
         for v in thermocouples:
             read_channel(v)
         if first_run == 0:
@@ -105,11 +107,18 @@ class ThermocoupleSetup:
             else:
                 k["value_label"].config(text=f'{thermocouples[idx].value_c:.2f}ºC')
                 k["value_label"].update()
-                
-            print(k["gain"].get())
             idx += 1
-        self.root.after(self.idle_interval, self.on_idle)
 
+        self.supply_widgets[0].config(text=f'Vcc {5.0/vadj:.2f}')
+        self.supply_widgets[0].update()
+        
+        self.supply_widgets[1].config(text=f'Vadj {vadj:.2f}')
+        self.supply_widgets[1].update()
+        
+        self.supply_widgets[2].config(text=f'PCB_T {pcb_temp:.2f}ºC')
+        self.supply_widgets[2].update()
+        self.root.after(self.idle_interval, self.on_idle)
+        
     def create_widgets(self):
         # Header Label
         header_label = tk.Label(self.root, text="SDS:TH7 Thermocouple Channel Setup", font=("Arial", 14))
@@ -136,9 +145,33 @@ class ThermocoupleSetup:
             self.create_channel_widgets(i)
 
         # Submit Button to process the input
-        self.submit_button = tk.Button(self.root, text="Submit", command=self.submit_setup)
-        self.submit_button.grid(row=9, columnspan=4, pady=20)
+        self.submit_button = tk.Button(self.root, text="Apply", command=self.submit_setup)
+        self.submit_button.grid(row=10, column=0, columnspan=1, pady=20)
+        
+        self.load_button = tk.Button(self.root, text="Load", command=self.load_setup)
+        self.load_button.grid(row=10, column=1, columnspan=1, pady=20)
+        
+        self.save_button = tk.Button(self.root, text="Save", command=self.save_setup)
+        self.save_button.grid(row=10, column=2, columnspan=1, pady=20)
+        
+        
 
+        
+        h6 = tk.Label(self.root, text="Vcc", font=("Arial", 12))
+        h6.grid(row=9, column=0, columnspan=1, pady=10)
+        
+        h7 = tk.Label(self.root, text="Vadj", font=("Arial", 12))
+        h7.grid(row=9, column=1, columnspan=1, pady=10)
+        h8 = tk.Label(self.root, text="PCB_T", font=("Arial", 12))
+        h8.grid(row=9, column=2, columnspan=2, pady=10)
+        
+        
+        self.supply_widgets = []
+        
+        self.supply_widgets.append(h6)
+        self.supply_widgets.append(h7)
+        self.supply_widgets.append(h8)
+        
     def create_channel_widgets(self, channel_number):
         # Create label for the channel
         channel_label = tk.Label(self.root, text=f"Channel {channel_number + 1}")
@@ -170,7 +203,16 @@ class ThermocoupleSetup:
             "gain": gain_var,
             "value_label": value_label
         })
-
+        
+        
+        
+    def load_setup(self):
+        print("load from file ?")
+        
+    def save_setup(self):
+        print("save to file ..")
+        
+        
     def submit_setup(self):
         # Iterate over each channel to retrieve the data
         for i, channel in enumerate(self.channel_widgets):
@@ -201,7 +243,7 @@ def current_temperature():
     number = resp[0] * 256 + resp[1]
           
     pcb_temp2 = (number/8.0) * 0.0625
-    print ("Temp: ", pcb_temp2, resp)
+    #print ("Temp: ", pcb_temp2, resp)
     pcb_temp = pcb_temp2
 
 def calc_vref():
@@ -218,7 +260,7 @@ def calc_vref():
         vref = resp[1] * 256.0 + resp[2] * 1.0
         vadj_now = vref/3355.4432
         vadj = vadj_now * 0.1 + vadj * 0.9
-        print ("vref: ", vref, "vadj: ", vadj)
+        #print ("vref: ", vref, "vadj: ", vadj)
         return
 
 def apply_lag_filter(old_value, new_value, lag_level):
@@ -334,7 +376,7 @@ def read_channel(thermocouple):
         valuec = translate_uv_to_celsius(uv_with_pcb, tc_type)
         thermocouple.value_c = valuec + thermocouple.offset
 
-        print(f"Ch {a}, temperature: {valuec} oC, uv: {uv_with_pcb}")
+        #print(f"Ch {a}, temperature: {valuec} oC, uv: {uv_with_pcb}")
         
 
 
