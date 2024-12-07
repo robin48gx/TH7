@@ -5,12 +5,14 @@
 
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import filedialog
 import spidev
 from thermocouples import *
 import numpy as np
+import json
+import os
 
-
-
+DEFAULT_CONFIG_PATH=".config.th7"
 
 spi = spidev.SpiDev()  # spi instance to read 12 bit ADC
 spi_tc77 = spidev.SpiDev() # spi instance to read TC77 digital temperature chip
@@ -78,6 +80,9 @@ class ThermocoupleSetup:
 
         # Create UI elements
         self.create_widgets()
+
+        # read in defaults file if exists
+        self.load_setup_startup()
         # In the __init__ method, add:
         self.idle_interval = 500  # Idle time in milliseconds (5 seconds)
         self.root.after(self.idle_interval, self.on_idle)
@@ -86,7 +91,7 @@ class ThermocoupleSetup:
     # Define the on_idle method:
     def on_idle(self):
         global first_run
-        print("The application is idle. Performing idle tasks...")
+        # print("The application is idle. Performing idle tasks...")
         current_temperature()
         calc_vref()
         
@@ -101,7 +106,10 @@ class ThermocoupleSetup:
         
         idx = 0
         for k in self.channel_widgets:
-            if thermocouples[idx].value_uv < -8000:
+            if thermocouples[idx].thermocouple_type == "uv":
+                k["value_label"].config(text=f'{thermocouples[idx].value_uv:.0f} uV')
+                k["value_label"].update()
+            elif thermocouples[idx].value_uv < -8000:
                 k["value_label"].config(text="NOT CONNECTED")
                 k["value_label"].update()
             else:
@@ -201,34 +209,65 @@ class ThermocoupleSetup:
             "tc_type": tc_type_var,
             "offset": offset_var,
             "gain": gain_var,
-            "value_label": value_label
+            "value_label": value_label,
+            "gain_entry" : gain_entry,
+            "offset_entry" : offset_entry,
+            "tc_type_menu" : tc_type_menu
+
         })
         
         
         
     def load_setup(self):
-        print("load from file ?")
-        
+        file_path = filedialog.askopenfilename(title='Load TH7 configuration', initialfile='.config.th7') # file_types[('config','*.th7')]
+        self.activate_setup(file_path)
+
+    def load_setup_startup(self):
+        if os.path.exists(DEFAULT_CONFIG_PATH):
+            self.activate_setup(DEFAULT_CONFIG_PATH)
+        else:
+            print("no config found")
+
+    def activate_setup(self, file_path):
+        with open(file_path, 'r') as file:
+            config = json.load(file)
+        channels =  config#config["channels"]
+        for i, channel in enumerate(channels):
+            print(f"Channel {i+1}: Type = {channel['type']} Gain = {channel['gain']}, Offset = {channel['offset']}")
+            thermocouples[i] = Thermocouple_Channel(i+1, float(channel['filter']), channel['type'], float(channel['offset']), float(channel['gain'])) 
+            #self.channel_widgets[i]['gain'] = channel['gain']
+            #self.channel_widgets[i].config(gain=channel['gain'])
+            #self.channel_widgets[i]['tc_type'] = channel['type']
+            self.channel_widgets[i]['gain_entry'].delete(0,tk.END)
+            self.channel_widgets[i]['gain_entry'].insert(0,channel['gain'])
+            self.channel_widgets[i]['offset_entry'].delete(0,tk.END)
+            self.channel_widgets[i]['offset_entry'].insert(0,channel['offset'])
+            #
+            self.channel_widgets[i]['tc_type'].set(channel['type'])
+            self.channel_widgets[i].update()
+
     def save_setup(self):
-        print("save to file ..")
-        
-        
-    def submit_setup(self):
-        # Iterate over each channel to retrieve the data
+        channels=[]
         for i, channel in enumerate(self.channel_widgets):
-            tc_type = channel["tc_type"].get()
-            offset = channel["offset"].get()
-            gain = channel["gain"].get()
-            print(self.channel_widgets)
-            try:
-                offset = float(offset)
-            except ValueError:
-                messagebox.sho
-                
-            thermocouples[i].offset = offset
-            thermocouples[i].gain = gain
-            thermocouples[i].thermocouple_type = tc_type
-            print(tc_type)
+            channels.append({
+                "type": channel["tc_type"].get(),
+                "gain": channel["gain"].get(),
+                "offset": channel["offset_entry"].get(),
+                "filter": thermocouples[i].filter_level,
+                })
+        print(f'channels {channels}')
+
+        file_path = filedialog.asksaveasfilename(title='Save as', initialfile='.config.th7', filetypes=[("TH7 Config", ".th7"),("All files", "*.*")], defaultextension=".th7")
+        with open(file_path, 'w') as file:
+            json.dump(channels, file, indent=4)
+
+    def submit_setup(self):
+        
+        for i, channel in enumerate(self.channel_widgets):
+            thermocouples[i].thermocouple_type = channel["tc_type"].get()
+            thermocouples[i].gain =float( channel["gain"].get())
+            thermocouples[i].offset = float(channel["offset_entry"].get())
+            print(f'updated: type={channel["tc_type"].get()}, gain={float(channel["gain"].get())}, offset={float(channel["offset_entry"].get())}')
 
 
 def init_spi():

@@ -1,0 +1,44 @@
+[
+    {
+        "type": "K",
+        "gain": 106.8,
+        "offset": "0",
+        "filter": 2.0
+    },
+    {
+        "type": "K",
+        "gain": 106.8,
+        "offset": "0",
+        "filter": 2.0
+    },
+    {
+        "type": "K",
+        "gain": 106.8,
+        "offset": "0",
+        "filter": 2.0
+    },
+    {
+        "type": "K",
+        "gain": 106.8,
+        "offset": "0",
+        "filter": 2.0
+    },
+    {
+        "type": "K",
+        "gain": 106.8,
+        "offset": "0",
+        "filter": 2.0
+    },
+    {
+        "type": "K",
+        "gain": 106.8,
+        "offset": "0",
+        "filter": 2.0
+    },
+    {
+        "type": "K",
+        "gain": 106.8,
+        "offset": "0",
+        "filter": 2.0
+    }
+]
