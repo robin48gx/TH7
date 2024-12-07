@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 
 # frame work for a tkinter GUI 
 # to control/configure a TH7
@@ -99,10 +101,8 @@ class ThermocoupleSetup:
             read_channel(v)
         if first_run == 0:
             first_run = 1
-        # Reschedule the idle callback
-         # print(self.channel_widgets)
-        self.channel_widgets[0]["value_label"].config(text     =  "99.9")
-        self.channel_widgets[0]["value_label"].update()
+            #self.channel_widgets[0]["value_label"].config(text     =  "99.9")
+            #self.channel_widgets[0]["value_label"].update()
         
         idx = 0
         for k in self.channel_widgets:
