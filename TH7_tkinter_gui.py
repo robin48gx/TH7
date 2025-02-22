@@ -23,6 +23,34 @@ vadj=1.0
 pcb_temp=25.0
 first_run=0
 
+# Define the Kalman filter class
+class KalmanFilter:
+    def __init__(self, pv, mv):
+        # Initial estimates
+        self.estimate = 0.0  # Initial estimate (could be your initial reading)
+        self.estimate_error = 1.0  # Initial estimate error
+        self.process_variance = pv  # Process noise (how much you expect your state to change)
+        self.measurement_variance = mv  # Measurement noise (how noisy your readings are)
+
+    def update(self, measurement):
+        # Prediction Step (assuming constant velocity)
+        predicted_estimate = self.estimate # use last estimate
+        predicted_estimate_error = self.estimate_error + self.process_variance
+        prediction_variance = predicted_estimate_error  # This is the prediction variance
+
+        # Correction Step
+        kalman_gain = predicted_estimate_error / (predicted_estimate_error + self.measurement_variance)
+        self.estimate = predicted_estimate + kalman_gain * (measurement - predicted_estimate)
+        self.estimate_error = (1 - kalman_gain) * predicted_estimate_error # this updates the estimate
+        self.process_variance = self.process_variance # * 1.01  # Slightly increase process variance to simulate changing uncertainty
+
+        return self.estimate, kalman_gain, self.estimate_error, self.process_variance, prediction_variance
+
+
+kalman_filters = np.array([0,0,0,0,0,0,0],dtype=object)
+for i in range (0,7):
+    kalman_filters[i] = KalmanFilter(1e-5,1.0)
+
 channels = [0,0,0,0,0,0,0,0]
 class Thermocouple_Channel:
 
@@ -43,7 +71,7 @@ thermocouples = np.array([0, 0, 0, 0, 0, 0, 0], dtype=object)
 # initialise array/list with 7 "blanks"
 for i in range(0, 7):
     # filter level = -1 indicates the channel is `blank'
-    thermocouples[i] = Thermocouple_Channel(i+1, 2, "K", 0, 106.8)
+    thermocouples[i] = Thermocouple_Channel(i+1, 5, "K", 0, 106.8)
 
 
 
@@ -319,6 +347,8 @@ def apply_lag_filter(old_value, new_value, lag_level):
     if lag_level == 4:
         return ( 0.9995 * old_value + 0.0005 * new_value )
 
+
+
 def translate_uv_to_celsius(uv, tc_type="K"):
 
     if uv is None:
@@ -402,13 +432,19 @@ def read_channel(thermocouple):
             # the signal has been amplified G=101 so we need to multiply by 10,100.00
             #uv = bigV* 106 * 100
         uv = bigV * 100 * thermocouple.gain
-        if first_run == 0:
-            thermocouple.value_uv = uv
+
+        # decide if kalman filter_level == 5
+        if thermocouple.filter_level == 5:
+            kout = kalman_filter[thermocouple.channel-1].update(uv)
+            thermocouple.value_uv = kout[0]
         else:
-            if (abs(uv - thermocouple.value_uv) > 1000.0):
+            if first_run == 0:
                 thermocouple.value_uv = uv
             else:
-                thermocouple.value_uv = apply_lag_filter(thermocouple.value_uv, uv, thermocouple.filter_level)
+                if (abs(uv - thermocouple.value_uv) > 1000.0):
+                    thermocouple.value_uv = uv
+                else:
+                    thermocouple.value_uv = apply_lag_filter(thermocouple.value_uv, uv, thermocouple.filter_level)
 
         tc_type = thermocouple.thermocouple_type
         uv_with_pcb = thermocouple.value_uv + translate_celsius_to_uv(pcb_temp, tc_type)
