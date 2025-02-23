@@ -46,10 +46,47 @@ class KalmanFilter:
 
         return self.estimate, kalman_gain, self.estimate_error, self.process_variance, prediction_variance
 
+import numpy as np
 
+class KalmanFilter2D:
+    def __init__(self, pv, mv, dt=1.0):
+        # Initial state estimate: [temperature, temperature change rate]
+        self.state = np.array([0.0, 0.0])  # Initial temperature and velocity
+        self.estimate_cov = np.array([[1.0, 0.0], [0.0, 1.0]])  # Initial covariance
+        # Process noise (uncertainty in state changes)
+        self.process_variance = pv
+        self.measurement_variance = mv
+        # Time step
+        self.dt = dt
+        # State transition model (F)
+        self.F = np.array([[1, dt], [0, 1]])  # Position updates based on velocity
+        # Process noise covariance (Q)
+        self.Q = np.array([[pv * dt**2, pv * dt], [pv * dt, pv]])  # Allows velocity to change over time
+        # Measurement model (H) - We only measure temperature, not velocity
+        self.H = np.array([[1, 0]])  
+        # Measurement noise covariance (R)
+        self.R = np.array([[mv]])  
+
+    def update(self, measurement):
+        # Prediction step
+        self.state = self.F @ self.state  # Predict next state
+        self.estimate_cov = self.F @ self.estimate_cov @ self.F.T + self.Q  # Update covariance
+        # Kalman gain calculation
+        S = self.H @ self.estimate_cov @ self.H.T + self.R  # Innovation covariance
+        K = self.estimate_cov @ self.H.T @ np.linalg.inv(S)  # Kalman gain
+        # Update step
+        y = measurement - (self.H @ self.state)  # Measurement residual
+        self.state += K @ y  # Update state with measurement
+        # Update estimate covariance
+        self.estimate_cov = (np.eye(2) - K @ self.H) @ self.estimate_cov
+
+        return self.state[0], self.state[1], K[0, 0]  # Return temperature, velocity, and Kalman gain
+
+update_time = 500.0
 kalman_filters = np.array([0,0,0,0,0,0,0],dtype=object)
 for i in range (0,7):
-    kalman_filters[i] = KalmanFilter(1e-5,1.0)
+    kalman_filters[i] = KalmanFilter2D(1e-4,1e-3,update_time/1000.0) # process_variance, measurement_error
+    #kalman_filters[i] = KalmanFilter(1e-5,1.0) # process_variance, measurement_error
 
 channels = [0,0,0,0,0,0,0,0]
 class Thermocouple_Channel:
@@ -114,7 +151,7 @@ class ThermocoupleSetup:
         # read in defaults file if exists
         self.load_setup_startup()
         # In the __init__ method, add:
-        self.idle_interval = 500  # Idle time in milliseconds (5 seconds)
+        self.idle_interval = int(update_time)  # Idle time in milliseconds
         self.root.after(self.idle_interval, self.on_idle)
 
 
@@ -141,7 +178,7 @@ class ThermocoupleSetup:
                 k["value_label"].config(text="NOT CONNECTED")
                 k["value_label"].update()
             else:
-                k["value_label"].config(text=f'{thermocouples[idx].value_c:.2f}ºC')
+                k["value_label"].config(text=f'{thermocouples[idx].value_c:.1f}ºC')
                 k["value_label"].update()
             idx += 1
 
