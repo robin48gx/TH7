@@ -13,6 +13,7 @@ from thermocouples import *
 import numpy as np
 import json
 import os
+import datetime
 
 DEFAULT_CONFIG_PATH=".config.th7"
 
@@ -155,6 +156,9 @@ class ThermocoupleSetup:
         self.root.after(self.idle_interval, self.on_idle)
 
 
+
+        
+
     # Define the on_idle method:
     def on_idle(self):
         global first_run
@@ -168,29 +172,58 @@ class ThermocoupleSetup:
             first_run = 1
             #self.channel_widgets[0]["value_label"].config(text     =  "99.9")
             #self.channel_widgets[0]["value_label"].update()
-        
-        idx = 0
-        for k in self.channel_widgets:
-            if thermocouples[idx].thermocouple_type == "uv":
-                k["value_label"].config(text=f'{thermocouples[idx].value_uv:.0f} uV')
-                k["value_label"].update()
-            elif thermocouples[idx].value_uv < -8000:
-                k["value_label"].config(text="NOT CONNECTED")
-                k["value_label"].update()
-            else:
-                k["value_label"].config(text=f'{thermocouples[idx].value_c:.1f}ºC')
-                k["value_label"].update()
-            idx += 1
+       
+        log_entry = {
+            "timestamp": str(datetime.datetime.now()),
+            "channels": [],
+            "rpi_status": {
+                "PCB_TEMP": pcb_temp,
+                "Vadj": vadj,
+                "Vcc": 5.0 / vadj
+            }
+         }
 
-        self.supply_widgets[0].config(text=f'Vcc {5.0/vadj:.2f}')
+        for idx, k in enumerate(self.channel_widgets):
+          if thermocouples[idx].thermocouple_type == "uv":
+            log_text = f'{thermocouples[idx].value_uv:.0f} uV'
+            k["value_label"].config(text=log_text)
+            k["value_label"].update()
+          elif thermocouples[idx].value_uv < -8000:
+            log_text = "NOT_CONNECTED"
+            k["value_label"].config(text=log_text)
+            k["value_label"].update()
+          else:
+            log_text = f'{thermocouples[idx].value_c:.1f}ºC'
+            k["value_label"].config(text=log_text)
+            k["value_label"].update()
+            log_entry["channels"].append({
+             "CH": idx,
+             "tc_type": thermocouples[idx].thermocouple_type,
+             "uV": thermocouples[idx].value_uv,
+             "C": thermocouples[idx].value_c
+            })
+
+
+            
+        log_text =  f'Vcc: {5.0/vadj:.2f}'
+        self.supply_widgets[0].config(text=log_text)
         self.supply_widgets[0].update()
         
-        self.supply_widgets[1].config(text=f'Vadj {vadj:.2f}')
+       
+        log_text =  f'Vadj: {vadj:.2f}'
+        self.supply_widgets[1].config(text=log_text)
         self.supply_widgets[1].update()
         
-        self.supply_widgets[2].config(text=f'PCB_T {pcb_temp:.2f}ºC')
+        log_text = f'PCB_T: {pcb_temp:.2f}ºC'
+        self.supply_widgets[2].config(text=log_text)
         self.supply_widgets[2].update()
         self.root.after(self.idle_interval, self.on_idle)
+
+
+        if self.logen.get():
+          with open('TH7.log', 'a') as file:
+            file.write(json.dumps(log_entry) + "\n")
+
         
     def create_widgets(self):
         # Header Label
@@ -226,8 +259,10 @@ class ThermocoupleSetup:
         
         self.save_button = tk.Button(self.root, text="Save", command=self.save_setup)
         self.save_button.grid(row=10, column=2, columnspan=1, pady=20)
-        
-        
+       
+        self.logen = tk.BooleanVar(value=True)
+        self.checkbox = tk.Checkbutton(self.root, text="Enable Logging", variable=self.logen)
+        self.checkbox.grid(row=10, column=4, columnspan=1, pady=20)
 
         
         h6 = tk.Label(self.root, text="Vcc", font=("Arial", 12))
